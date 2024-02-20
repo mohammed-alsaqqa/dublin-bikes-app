@@ -1,0 +1,6 @@
+# Ignore .env file
+.env
+
+# Ignore .pem file
+/database-python-scripts/*.pem
+
