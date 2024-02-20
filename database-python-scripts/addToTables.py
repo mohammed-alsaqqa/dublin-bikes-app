@@ -59,7 +59,7 @@ VALUES (%s, %s, %s, %s, %s);
 """
 
 insert_query_weather = f'''
-INSERT INTO {table_name_weather} (city_id, temperature, humidity, weather_condition, wind_speed, capture_time)
+INSERT INTO {table_name_weather} (number, temperature, humidity, weather_condition, wind_speed, last_update)
 VALUES (%s, %s, %s, %s, %s, %s);
 '''
 
