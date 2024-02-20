@@ -25,8 +25,13 @@ conn = mysql.connector.connect(
 api_key = os.getenv("BIKES_API_KEY")
 contract_name = "Dublin"
 
+# API key and city_id for weather API
+weather_api_key = ""
+city_id = "2964574"
+
 # Get request for the data
 response_API = requests.get(f"https://api.jcdecaux.com/vls/v1/stations?contract={contract_name}&apiKey={api_key}")
+response_API_weather = requests.get(f"http://api.openweathermap.org/data/2.5/weather?id={city_id}&appid={weather_api_key}")
 
 # code 200 shows it has successfully recieved the data
 print(response_API)
@@ -35,21 +40,31 @@ print(response_API)
 data = response_API.text
 parseJSON = json.loads(data)
 
+weather_data = response_API_weather.text
+weather = json.loads(weather_data)
+
 # Create a cursor object to execute SQL commands
 cur = conn.cursor()
 
 
 
-# Create a table name using the station number
+# indicates the table in the RDS
 table_name = "availability"
+table_name_weather = "weather_data"
 
-# Define the SQL statement to insert data into the table
+# Define the SQL statement to insert data into the table for both weather and bikes
 insert_query = f"""
 INSERT INTO {table_name} (number, last_update, available_bikes, available_bike_stands, status)
 VALUES (%s, %s, %s, %s, %s);
 """
-try:
-    for station in parseJSON:
+
+insert_query_weather = f'''
+INSERT INTO {table_name_weather} (city_id, temperature, humidity, weather_condition, wind_speed, capture_time)
+VALUES (%s, %s, %s, %s, %s, %s);
+'''
+
+for station in parseJSON:
+    try:
         # Execute the query to insert data into the table
         cur.execute(insert_query, (
             station['number'],
@@ -58,19 +73,32 @@ try:
             station['available_bike_stands'],
             station['status']
             ))
+        
+        current_time = station['status']
+
+        cur.execute(insert_query_weather, (
+            station['number'],
+            weather['main']['temp'],
+            weather['main']['humidity'],
+            weather['weather'][0]['main'],
+            weather['wind']['speed'],
+            current_time
+        ))
 
         # Commit the transaction
         conn.commit()
 
+
+
         print(f"Data inserted into table {table_name} successfully.")
 
-except mysql.connector.Error as e:
-    with open("/home/ubuntu/project/database-python-scripts/error-logs/database-errors.txt", "a") as f:
-        humanTime = datetime.datetime.utcfromtimestamp(station["last_update"]/1000)
-        humanReadableTime = humanTime.strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"{e} at time: {humanReadableTime}\n")
-except Exception as ee:
-    print(ee)
+    except mysql.connector.Error as e:
+        with open("/home/ubuntu/project/database-python-scripts/error-logs/database-errors.txt", "a") as f:
+            humanTime = datetime.datetime.utcfromtimestamp(station["last_update"]/1000)
+            humanReadableTime = humanTime.strftime("%Y-%m-%d %H:%M:%S")
+            f.write(f"{e} at time: {humanReadableTime}\n")
+    except Exception as ee:
+        print(ee)
 
 
 # Close the connection
