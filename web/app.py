@@ -17,4 +17,8 @@ def before():
 def hello():
     return "Hello World!"
 
+@app.route('/station/<int:station_id>')
+def station(station_id):
+    return "this will do the station"
+
 app.run()
