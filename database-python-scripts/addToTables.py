@@ -26,7 +26,7 @@ api_key = os.getenv("BIKES_API_KEY")
 contract_name = "Dublin"
 
 # API key and city_id for weather API
-weather_api_key = ""
+weather_api_key = os.getenv("OPEN_WEATHER_API")
 city_id = "2964574"
 
 # Get request for the data
@@ -74,7 +74,7 @@ for station in parseJSON:
             station['status']
             ))
         
-        current_time = station['status']
+        current_time = station['last_update']
 
         cur.execute(insert_query_weather, (
             station['number'],
