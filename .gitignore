@@ -3,5 +3,4 @@
 
 # Ignore .pem file
 /database-python-scripts/*.pem
-/web/*.txt
 
