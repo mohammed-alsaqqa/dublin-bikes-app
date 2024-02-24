@@ -86,6 +86,13 @@ def getAllData()->dict:
         dictionary: list of the last data point for each station
     """
     stations = getStations()
+    data = {}
+
+    for station in stations:
+        data[station] = getRecentData(station)
+
+    return data
+
 
 # Close the connection
 conn.close()
