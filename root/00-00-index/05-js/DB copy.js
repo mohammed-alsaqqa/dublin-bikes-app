@@ -1,7 +1,7 @@
 function addBikeStationMarkers(map, stations) {
     
     const icon = {
-    url: "bike.png",
+    url: "/root/00-00-index/02-images/Bike.png",
     scaledSize: new google.maps.Size(30, 30),
     };
     
@@ -12,6 +12,12 @@ function addBikeStationMarkers(map, stations) {
             map: map,
             title: station[2],
             icon: icon
+        });
+        marker.addListener("click", () => {
+            const infoWindow = new google.maps.InfoWindow({
+                content: station[2]
+            });
+            infoWindow.open(map, marker);
         });
     });
 }

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            background-color: darkgray;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        function initMap() {
+            let mapOptions = {
+                center: new google.maps.LatLng(53.3498, -6.2603),
+                zoom: 13,
+            }
+
+            let map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            fetch('/root/00-00-index/04-data/DublinBikes.json')
+            .then(response => response.json())
+            .then(data => {
+            addBikeStationMarkers(map, data.records);
+    })
+            .catch(error => console.error('Error loading JSON data:', error));
+        }
+    </script>
+
+        
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUbwHYZHM6kKwneNkd-Z3_ykkJzSUOzgI&callback=initMap"></script>
+    <script src="/root/00-00-index/05-js/DB copy.js"></script>
+</body>
+</html>
