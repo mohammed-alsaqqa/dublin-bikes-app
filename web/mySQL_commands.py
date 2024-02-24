@@ -94,5 +94,32 @@ def getAllData()->dict:
     return data
 
 
+def getWeatherData()->list:
+    """
+    This function returns the most recent weather data
+    """
+    # Define the SQL statement 
+    query = """
+    SELECT *
+    FROM weather_data
+    ORDER BY last_update DESC
+    LIMIT 1;
+    """
+
+    try:
+        # Execute the query 
+        cur.execute(query)
+
+        # save the query data
+        result = cur.fetchall()
+
+        # return the result
+        return result
+    except Exception as ee:
+        print(ee)
+
+
+
+
 # Close the connection
 conn.close()
