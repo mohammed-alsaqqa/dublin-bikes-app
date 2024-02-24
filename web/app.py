@@ -1,4 +1,6 @@
-from flask import Flask
+from flask import Flask, jsonify
+
+
 app = Flask(__name__)
 
 @app.route('/<int:number>/')
@@ -21,4 +23,9 @@ def hello():
 def station(station_id):
     return "this will do the station"
 
+import mySQL_commands as mc
+@app.route('/stations_json_data', methods=['GET'])
+def stations():
+    stations = mc.getStations()
+    
 app.run()
