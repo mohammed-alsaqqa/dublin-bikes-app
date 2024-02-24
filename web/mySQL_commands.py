@@ -60,7 +60,7 @@ def getStations(conn):
         print(ee)
 
 
-def getRecentData(id, conn)->list:
+def getRecentData(id, conn)->dict:
     """
     input: id - station id
     output: result - the most recent data for a given station id
@@ -87,8 +87,11 @@ def getRecentData(id, conn)->list:
         # save the query data
         result = cur.fetchall()
 
+        # put the data in a dictionary
+        data = {"station_id":id, "last_update":result[0][1], "bikes_available":result[0][2], "stands_available":result[0][3], "status":result[0][4]}
+        
         # return the result
-        return result
+        return data
     except Exception as ee:
         print(ee)
 
@@ -130,8 +133,13 @@ def getWeatherData(conn)->list:
         # save the query data
         result = cur.fetchall()
 
+        # save data in a dictionary
+        data = {"station_id":result[0][0], "wind_speed":result[0][1], "Humidity":result[0][2], "Weather":result[0][3], "last_update":result[0][4], "temperature":result[0][5]}
+
         # return the result
-        return result
+        return data
     except Exception as ee:
         print(ee)
 
+conn = createConnection()
+print(getAllData(getStations(conn),conn))
