@@ -1,9 +1,7 @@
 from flask import Flask, jsonify
 import mySQL_commands as mc
 
-
 app = Flask(__name__)
-
 
 @app.before_request
 def before():
@@ -12,7 +10,6 @@ def before():
 @app.route('/hello/')
 def hello():
     return "Hello World!"
-
 
 @app.route('/stations_json_data/')
 def stations():
