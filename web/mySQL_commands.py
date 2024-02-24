@@ -7,53 +7,85 @@ from dotenv import load_dotenv
 import os
 
 
-
-dotenv_path = ".env"
-load_dotenv(dotenv_path)
-
-
-
-# Connect to the database (or create it if it doesn't exist)
+# Connect to the database 
 conn = mysql.connector.connect(
-    host=os.getenv("DATABASE_HOST_NAME"),
-    user=os.getenv("DATABASE_USER"),
-    password=os.getenv("DATABASE_PASSWORD"),
-    database=os.getenv("DATABASE_NAME")
+    host='localhost',
+    user='root',
+    password='',
+    database="dublinbikes"
 )
-
+# For use once the database is set up
+# dotenv_path = ".env"
+# load_dotenv(dotenv_path)
 
 # Create a cursor object to execute SQL commands
 cur = conn.cursor()
 
+def getStations(): 
+    """
+    This function returns a list of all the station ids
+    """
+    # Define the SQL statement 
+    query = """
+    SELECT DISTINCT station_id
+    FROM station;
+    """
 
-# Create a table name using the station number
-table_name = "availability"
+    try:
+        # Execute the query 
+        cur.execute(query)
 
-# Define the SQL statement 
-query = f"""
-SELECT *
-FROM {table_name}
-WHERE station_id = '10'
-ORDER BY timestamp DESC
-LIMIT 1;
-"""
-try:
-    
-    # Execute the query 
-    cur.execute(query)
+        # save the query data
+        result = cur.fetchall()
 
-    # save the query data
-    result = cur.fetchall()
-    print(result)
+        temp = []
+        for i in result:
+            temp.append(i[0])
 
-    # Commit the transaction
-    conn.commit()
+        # return the result
+        return temp
+    except Exception as ee:
+        print(ee)
 
-    print(f"Data inserted into table {table_name} successfully.")
 
-except Exception as ee:
-    print(ee)
+def getRecentData(id)->list:
+    """
+    input: id - station id
+    output: result - the most recent data for a given station id
 
+    This function returns the most recent data for a given station id
+    """
+    # Define the SQL statement 
+    query = f"""
+    SELECT *
+    FROM availability
+    WHERE station_id = '{id}'
+    ORDER BY last_update DESC
+    LIMIT 1;
+    """
+
+    try:
+        
+        # Execute the query 
+        cur.execute(query)
+
+        # save the query data
+        result = cur.fetchall()
+
+        # return the result
+        return result
+    except Exception as ee:
+        print(ee)
+
+
+def getAllData()->dict:
+    """
+    This function returns a list of all the recent data for all stations
+
+    Returns:
+        dictionary: list of the last data point for each station
+    """
+    stations = getStations()
 
 # Close the connection
 conn.close()
