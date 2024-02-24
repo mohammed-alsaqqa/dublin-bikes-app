@@ -4,9 +4,31 @@ import mysql.connector
 from dotenv import load_dotenv
 import os
 
+load_dotenv(".env")
 PASSWORD = os.getenv("PASSWORD")
 
-def getStations(): 
+def createConnection():
+    """
+    This function creates a connection to the database
+    """
+        # Connect to the database 
+    conn = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    password=PASSWORD,
+    database="dublinbikes"
+    )
+    return conn
+
+
+def stopConnection(conn):
+    """
+    This function stops the connection to the database
+    """
+    conn.close()
+
+
+def getStations(conn): 
     """
     This function returns a list of all the station ids
     """
@@ -15,13 +37,7 @@ def getStations():
     SELECT DISTINCT station_id
     FROM station;
     """
-    # Connect to the database 
-    conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password=PASSWORD,
-    database="dublinbikes"
-    )
+
     # For use once the database is set up
     # dotenv_path = ".env"
     # load_dotenv(dotenv_path)
@@ -40,33 +56,19 @@ def getStations():
         for i in result:
             temp.append(i[0])
 
-        # close the connection   
-        conn.close()
-
         # return the result
         return temp
     except Exception as ee:
         print(ee)
 
 
-def getRecentData(id)->list:
+def getRecentData(id, conn)->list:
     """
     input: id - station id
     output: result - the most recent data for a given station id
 
     This function returns the most recent data for a given station id
     """
-        # Connect to the database 
-    conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password=PASSWORD,
-    database="dublinbikes"
-    )
-    # For use once the database is set up
-    # dotenv_path = ".env"
-    # load_dotenv(dotenv_path)
-
     # Create a cursor object to execute SQL commands
     cur = conn.cursor()
 
@@ -87,46 +89,31 @@ def getRecentData(id)->list:
         # save the query data
         result = cur.fetchall()
 
-        # close the connection
-        conn.close()
-
         # return the result
         return result
     except Exception as ee:
         print(ee)
 
 
-def getAllData()->dict:
+def getAllData(stations, conn)->dict:
     """
     This function returns a list of all the recent data for all stations
 
     Returns:
         dictionary: list of the last data point for each station
     """
-    stations = getStations()
     data = {}
 
     for station in stations:
-        data[station] = getRecentData(station)
+        data[station] = getRecentData(station, conn)
 
     return data
 
 
-def getWeatherData()->list:
+def getWeatherData(conn)->list:
     """
     This function returns the most recent weather data
     """
-        # Connect to the database 
-    conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password=PASSWORD,
-    database="dublinbikes"
-    )
-    # For use once the database is set up
-    # dotenv_path = ".env"
-    # load_dotenv(dotenv_path)
-
     # Create a cursor object to execute SQL commands
     cur = conn.cursor()
 
@@ -145,12 +132,8 @@ def getWeatherData()->list:
         # save the query data
         result = cur.fetchall()
 
-        # close the connection
-        conn.close()
-
         # return the result
         return result
     except Exception as ee:
         print(ee)
-
 
