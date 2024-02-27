@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        #container {
-            height: 100%;
-            width: 100%;
-        }
 
-        #map {
-            height: 100%;
-            width: 100%;
-            background-color: darkgray;
-        }
+    <link rel="stylesheet" type="text/css" href="Dublinbikes.css">
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-    </style>
 </head>
 <body>
+    
+    <!--Maps container-->
     <div id="container">
         <div id="map"></div>
     </div>
+    
+    <!--Live weather container-->
+    <div id="weather-container"> </div>   
 
+    <!--Search bar container-->
+    <div id="search-container">
+        <input id="search" type="text" placeholder="Search for a bike station"> 
+        </div>
+
+    <!--Google maps API script-->
     <script>
+
+        // Initialising the map + setting its parameters.
         function initMap() {
             let mapOptions = {
                 center: new google.maps.LatLng(53.3498, -6.2603),
-                zoom: 13,
+                zoom: 14,
             }
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
