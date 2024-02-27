@@ -9,7 +9,7 @@ def createConnection():
     """
     This function creates a connection to the database
     """
-        # Connect to the database 
+    # Connect to the database 
     conn = mysql.connector.connect(
     host='localhost',
     user='root',
@@ -35,11 +35,6 @@ def getStations(conn):
     SELECT DISTINCT station_id
     FROM station;
     """
-
-    # For use once the database is set up
-    # dotenv_path = ".env"
-    # load_dotenv(dotenv_path)
-
     # Create a cursor object to execute SQL commands
     cur = conn.cursor()
 
@@ -141,5 +136,5 @@ def getWeatherData(conn)->list:
     except Exception as ee:
         print(ee)
 
-conn = createConnection()
-print(getAllData(getStations(conn),conn))
+# conn = createConnection()
+# print(getAllData(getStations(conn),conn))

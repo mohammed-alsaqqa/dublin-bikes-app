@@ -3,10 +3,7 @@ import mySQL_commands as mc
 
 app = Flask(__name__)
 
-@app.before_request
-def before():
-    print("This is executed BEFORE each request.")
-    
+  
 @app.route('/hello/')
 def hello():
     return "Hello World!"
