@@ -136,5 +136,35 @@ def getWeatherData(conn)->list:
     except Exception as ee:
         print(ee)
 
-# conn = createConnection()
-# print(getAllData(getStations(conn),conn))
+def getHistoricStationData(conn, id):
+    """
+    This function returns all the data for a given station id
+    """
+    # Create a cursor object to execute SQL commands
+    curr = conn.cursor()
+
+    # Define the SQL statement
+    query = f"""
+    SELECT *
+    FROM availability
+    WHERE station_id = '{id}'
+    """
+
+    try:
+        # Execute the query 
+        curr.execute(query)
+
+        # save the query data
+        result = curr.fetchall()
+        data = {}
+        # for i in result:
+        #     pass
+
+        # return the result
+        return result  
+    except Exception as ee:
+        print(ee)
+
+
+conn = createConnection()
+print(getHistoricStationData(conn,10))
