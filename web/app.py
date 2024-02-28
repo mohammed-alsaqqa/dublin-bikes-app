@@ -7,7 +7,8 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     # Renders index.html from the 'templates' folder
-    return render_template('index.html')
+    api_key = os.getenv('GMAP_API_KEY')
+    return render_template('index.html',GMAP_API_KEY=api_key)
 
 
 @app.route('/hello/')
