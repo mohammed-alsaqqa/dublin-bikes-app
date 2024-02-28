@@ -91,19 +91,38 @@ def getRecentData(id, conn)->dict:
         print(ee)
 
 
-def getAllData(stations, conn)->dict:
+# def getAllData(stations, conn)->dict:
+#     """
+#     This function returns a list of all the recent data for all stations
+
+#     Returns:
+#         dictionary: list of the last data point for each station
+#     """
+#     data = {}
+
+#     for station in stations:
+#         data[station] = getRecentData(station, conn)
+
+#     return data
+        
+
+def getAllData(stations, conn)->list:
     """
     This function returns a list of all the recent data for all stations
 
     Returns:
-        dictionary: list of the last data point for each station
+        list: A list containing the last data point for each station
     """
-    data = {}
+    data = []
 
     for station in stations:
-        data[station] = getRecentData(station, conn)
+        station_data = getRecentData(station, conn)
+        # Optionally, you can add the station ID to the station_data if it's not already included
+        station_data['station_id'] = station
+        data.append(station_data)
 
     return data
+
 
 
 def getWeatherData(conn)->list:

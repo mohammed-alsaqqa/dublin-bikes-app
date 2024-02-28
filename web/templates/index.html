@@ -2,7 +2,7 @@
 <html>
 <head>
 
-    <link rel="stylesheet" type="text/css" href="Dublinbikes.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
 
 </head>
 <body>
@@ -32,7 +32,7 @@
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-            fetch('/root/00-00-index/04-data/DublinBikes.json')
+            fetch('/static/js/DublinBikes.json')
             .then(response => response.json())
             .then(data => {
             addBikeStationMarkers(map, data.records);
@@ -43,7 +43,7 @@
 
         
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUbwHYZHM6kKwneNkd-Z3_ykkJzSUOzgI&callback=initMap"></script>
-    <script src="/root/00-00-index/05-js/addBikeStationMarkers.js"></script>
+    <script src="/static/js/addBikeStationMarkers.js"></script>
     
 </body>
 </html>

@@ -1,9 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory, render_template
 import mySQL_commands as mc
+import os
 
 app = Flask(__name__)
 
-  
+@app.route('/')
+def index():
+    # Renders index.html from the 'templates' folder
+    return render_template('index.html')
+
+
 @app.route('/hello/')
 def hello():
     return "Hello World!"
@@ -22,5 +28,8 @@ def weather():
     data = mc.getWeatherData(conn)
     mc.stopConnection(conn)
     return jsonify(data)
+
+
+
 
 app.run()
