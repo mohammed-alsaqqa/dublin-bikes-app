@@ -6,19 +6,20 @@
 
 </head>
 <body>
-    
-    <!--Maps container-->
-    <div id="container">
-        <div id="map"></div>
-    </div>
-    
-    <!--Live weather container-->
-    <div id="weather-container"> </div>   
 
-    <!--Search bar container-->
-    <div id="search-container">
-        <input id="search" type="text" placeholder="Search for a bike station"> 
+    <!--Flex box setup-->
+    <div class="flexb">
+        <div class="flex-row">
+            <div class="flex-item" id="top-left">Dublin Bikes</div>
+            <div class="flex-item" id="top-right">Weather</div>
         </div>
+        <div class="flex-row">
+            <div class="flex-item" id="map-container">
+                <div id="map">Map Here</div>
+            </div>
+            <div class="flex-item" id="bottom-right">Live Trends</div>
+        </div>
+    </div>
 
     <!--Google maps API script-->
     <script>
@@ -32,6 +33,7 @@
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+            // Fetching the static JSON with station data.
             fetch('/static/js/DublinBikes.json')
             .then(response => response.json())
             .then(data => {
@@ -40,10 +42,10 @@
             .catch(error => console.error('Error loading JSON data:', error));
         }
     </script>
-
-        
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&callback=initMap"></script>
-    <script src="/static/js/addBikeStationMarkers.js"></script>
     
+    <!--Google Maps API + places library important, for searchbar-->
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
+
+    <script src="/static/js/addBikeStationMarkers.js"></script>
 </body>
 </html>

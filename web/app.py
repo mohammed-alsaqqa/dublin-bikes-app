@@ -8,7 +8,7 @@ app = Flask(__name__)
 def index():
     # Renders index.html from the 'templates' folder
     api_key = os.getenv('GMAP_API_KEY')
-    return render_template('index.html',GMAP_API_KEY=api_key)
+    return render_template('Dublinbikes.html',GMAP_API_KEY=api_key)
 
 
 @app.route('/hello/')
@@ -30,7 +30,4 @@ def weather():
     mc.stopConnection(conn)
     return jsonify(data)
 
-
-
-
-app.run()
+app.run(debug=True)

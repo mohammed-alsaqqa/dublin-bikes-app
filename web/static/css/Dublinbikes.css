@@ -1,14 +1,3 @@
-#container {
-    height: 100%;
-    width: 100%;
-}
-
-#map {
-    height: 100%;
-    width: 100%;
-    background-color: darkgray;
-}
-
 html, body {
     height: 100%;
     margin: 0;
@@ -27,14 +16,50 @@ html, body {
     border: 0px;
 }
 
-#weather-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 50px; 
-    height: 50px;
-    background-color: white; 
-    padding: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5); 
-    z-index: 10; 
+.flexb {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.flex-row {
+    display: flex;
+    flex: 1; 
+}
+
+.flex-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1; 
+    border: 2px solid #000; 
+    box-sizing: border-box; 
+}
+
+/* Comments below outlining the flex properties if either y'all want to play around */
+
+/* This is for the height of the top left container */
+#top-left {
+    flex: 2;
+}
+
+/* This is for the witdh of the top right container */
+#top-right {
+    flex: .667; 
+}
+
+/* This is for the height of the bottom two containers */
+.flex-row:last-child {
+    flex: 4; 
+}
+
+/* For map container */
+#map-container {
+    flex: 3; /* Increases size, taking more space */
+}
+
+/* For size of map in container */
+#map {
+    width: 100%;
+    height: 100%;
 }
