@@ -55,7 +55,7 @@ def getStations(conn):
         print(ee)
 
 
-def getRecentData(id, conn)->dict:
+def getRecentStationData(id, conn)->dict:
     """
     input: id - station id
     output: result - the most recent data for a given station id
@@ -116,7 +116,7 @@ def getAllData(stations, conn)->list:
     data = []
 
     for station in stations:
-        station_data = getRecentData(station, conn)
+        station_data = getRecentStationData(station, conn)
         # Optionally, you can add the station ID to the station_data if it's not already included
         station_data['station_id'] = station
         data.append(station_data)

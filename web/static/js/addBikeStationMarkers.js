@@ -34,20 +34,6 @@ function addBikeStationMarkers(map, stations) {
     });
 }
 
-// Function to display a popup when a marker is hovered over.
-// Can edit the contents of the popup later here.
-function popup(marker, station, map) {
-    // So if there is no popup being displayed a new one is created.
-    if (!currentInfoWindow) {
-        currentInfoWindow = new google.maps.InfoWindow();
-    }
-
-    // Contents of popup. 
-    const popContent = `<div><h3>${station[2]}</h3><p>We can add real time data in here later</p></div>`;
-    currentInfoWindow.setContent(popContent);
-    currentInfoWindow.open(map, marker);
-}
-
 
 // Function to display a popup when a marker is clicked.
 function popup(marker, station, map) {
@@ -65,18 +51,15 @@ function popup(marker, station, map) {
 
 // Function to fetch the latest data for a station and update the UI
 function fetchLatestStationData(stationId, callback) {
-    fetch('/stations_json_data/') // Make a GET request to the Flask API endpoint
+    fetch(`/single_station_json_data/${stationId}`) // Make a GET request to the Flask API endpoint
     .then(response => response.json())
-    .then(allData => {
-        // Filter the data for the specific station ID
-        console.log(allData);
-        const stationData = allData.find(station => station.station_id === stationId);
+    .then(stationData => {
         if (stationData) {
-            console.log(stationData); // Log the specific station's data
+            // console.log(stationData); // Log the specific station's data
             callback(stationData); // Pass the specific station's data to the callback function to update the popup
         } else {
-            console.error('Station data not found for ID:', stationId);
-            callback('Station data not found'); // Handle scenario where data for the station ID is not found
+            console.error('No data received for station ID:', stationId);
+            callback('No data found for this station'); // Handle scenario where no data was returned
         }
     })
     .catch(error => {
@@ -84,6 +67,7 @@ function fetchLatestStationData(stationId, callback) {
         callback('Error fetching data'); // Handle error scenario
     });
 }
+
 
 
 
