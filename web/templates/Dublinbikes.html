@@ -17,7 +17,7 @@
             <div class="flex-item" id="map-container">
                 <div id="map">Map Here</div>
             </div>
-            <div class="flex-item" id="bottom-right">Live Trends</div>
+            <div id="side-info" class="flex-item" id="bottom-right"></div>
         </div>
     </div>
 
@@ -45,7 +45,14 @@
     
     <!--Google Maps API + places library important, for searchbar-->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
-
     <script src="/static/js/addBikeStationMarkers.js"></script>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Include Moment.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+<!-- Include Chart.js adapter for Moment.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
+
+    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
 </body>
 </html>

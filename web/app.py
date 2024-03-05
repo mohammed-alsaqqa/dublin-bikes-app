@@ -27,11 +27,17 @@ def stations():
 @app.route('/single_station_json_data/<int:station_id>')
 def station(station_id):
     conn = mc.createConnection()
-    stations = mc.getStations(conn)
     data = mc.getRecentStationData(station_id, conn)
     mc.stopConnection(conn)
     return jsonify(data)
 
+
+@app.route('/single_station_historical_json_data/<int:station_id>')
+def station_history(station_id):
+    conn = mc.createConnection()
+    data = mc.getHistoricStationData(conn, station_id)
+    mc.stopConnection(conn)
+    return jsonify(data)
 
 
 @app.route('/weather_json_data/')
