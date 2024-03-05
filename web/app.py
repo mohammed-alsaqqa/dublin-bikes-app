@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, render_template
+from flask import Flask, jsonify, render_template
 import mySQL_commands as mc
 import os
 
@@ -22,6 +22,23 @@ def stations():
     data = mc.getAllData(stations, conn)
     mc.stopConnection(conn)
     return jsonify(data)
+
+
+@app.route('/single_station_json_data/<int:station_id>')
+def station(station_id):
+    conn = mc.createConnection()
+    data = mc.getRecentStationData(station_id, conn)
+    mc.stopConnection(conn)
+    return jsonify(data)
+
+
+@app.route('/single_station_historical_json_data/<int:station_id>')
+def station_history(station_id):
+    conn = mc.createConnection()
+    data = mc.getHistoricStationData(conn, station_id)
+    mc.stopConnection(conn)
+    return jsonify(data)
+
 
 @app.route('/weather_json_data/')
 def weather():
