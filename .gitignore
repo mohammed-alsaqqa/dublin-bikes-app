@@ -5,3 +5,5 @@
 /database-python-scripts/*.pem
 
 /web/__pycache__/
+
+.DS_Store
