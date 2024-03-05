@@ -55,7 +55,7 @@ def getStations(conn):
         print(ee)
 
 
-def getRecentData(id, conn)->dict:
+def getRecentStationData(id, conn)->dict:
     """
     input: id - station id
     output: result - the most recent data for a given station id
@@ -91,20 +91,6 @@ def getRecentData(id, conn)->dict:
         print(ee)
 
 
-# def getAllData(stations, conn)->dict:
-#     """
-#     This function returns a list of all the recent data for all stations
-
-#     Returns:
-#         dictionary: list of the last data point for each station
-#     """
-#     data = {}
-
-#     for station in stations:
-#         data[station] = getRecentData(station, conn)
-
-#     return data
-        
 
 def getAllData(stations, conn)->list:
     """
@@ -116,7 +102,7 @@ def getAllData(stations, conn)->list:
     data = []
 
     for station in stations:
-        station_data = getRecentData(station, conn)
+        station_data = getRecentStationData(station, conn)
         # Optionally, you can add the station ID to the station_data if it's not already included
         station_data['station_id'] = station
         data.append(station_data)
@@ -175,9 +161,6 @@ def getHistoricStationData(conn, id):
 
         # save the query data
         result = curr.fetchall()
-        data = {}
-        # for i in result:
-        #     pass
 
         # return the result
         return result  
