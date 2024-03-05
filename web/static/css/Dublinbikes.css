@@ -36,6 +36,23 @@ html, body {
     box-sizing: border-box; 
 }
 
+
+#side-info {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    width: 100%;
+}
+
+
+#side-info canvas {
+    width: 90%;
+    max-width: 100%;
+    height: 300px; 
+    margin-bottom: 20px;
+}
+
+
 /* Comments below outlining the flex properties if either y'all want to play around */
 
 /* This is for the height of the top left container */
