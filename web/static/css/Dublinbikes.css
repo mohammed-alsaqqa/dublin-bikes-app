@@ -16,6 +16,13 @@ html, body {
     border: 0px;
 }
 
+.map-search {
+    position: absolute;
+    width: 150px;
+    height: 20px;
+    font-size: 16px;
+}
+
 .flexb {
     display: flex;
     flex-direction: column;
