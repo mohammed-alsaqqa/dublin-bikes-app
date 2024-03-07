@@ -11,12 +11,12 @@ function addBikeStationMarkers(map, stations) {
     
     // We want to Loop through the stations array and add a marker for each station.
     stations.forEach(station => {
-        console.log(station);
-        const latLng = new google.maps.LatLng(station[4], station[5]);
+        // console.log(station);
+        const latLng = new google.maps.LatLng(station.position_lat, station.position_long);
         const marker = new google.maps.Marker({
             position: latLng,
             map: map,
-            title: station[2],
+            title: station.station_name,
             icon: icon
         });
    
@@ -34,9 +34,9 @@ function addBikeStationMarkers(map, stations) {
 // Function to display a popup when a marker is clicked.
 function popup(marker, station, map) {
     // Fetch the latest data for the clicked station
-    fetchLatestStationData(station[0], (latestData) => {
+    fetchLatestStationData(station.station_id, (latestData) => {
         // Update the popup content with the latest data
-        const popContent = `<div><h3>${station[2]}</h3><p>Bikes available: ${latestData.bikes_available}<br>Stands available: ${latestData.stands_available}</p></div>`;
+        const popContent = `<div><h3>${station.station_name}</h3><p>Bikes available: ${latestData.bikes_available}<br>Stands available: ${latestData.stands_available}</p></div>`;
         if (!currentInfoWindow) {
             currentInfoWindow = new google.maps.InfoWindow();
         }
@@ -66,7 +66,7 @@ function fetchLatestStationData(stationId, callback) {
 
 
 function showStationSideInfo(marker, station, map) {
-    fetchHisoricalStationData(station[0], historicalData => {
+    fetchHisoricalStationData(station.station_id, historicalData => {
         const processedData = processHistoricalData(historicalData);
         
         createChart('daily-averages-chart', 'Daily Averages of Available Bikes', processedData.daily.labels, processedData.daily.data, 'Day');

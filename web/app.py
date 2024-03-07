@@ -44,6 +44,7 @@ def station_history(station_id):
 def weather():
     conn = mc.createConnection()
     data = mc.getWeatherData(conn)
+    print(123,data)
     mc.stopConnection(conn)
     return jsonify(data)
 
