@@ -11,7 +11,7 @@
     <div class="flexb">
         <div class="flex-row">
             <div class="flex-item" id="top-left">Dublin Bikes</div>
-            <div class="flex-item" id="top-right">Weather</div>
+            <div class="flex-item" id="top-right"></div>
         </div>
         <div class="flex-row">
             <div class="flex-item" id="map-container">
@@ -34,10 +34,10 @@
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
             // Fetching the static JSON with station data.
-            fetch('/static/js/DublinBikes.json')
+            fetch('/stations_json_data')
             .then(response => response.json())
             .then(data => {
-            addBikeStationMarkers(map, data.records);
+            addBikeStationMarkers(map, data);
     })
             .catch(error => console.error('Error loading JSON data:', error));
         }
@@ -45,6 +45,7 @@
     
     <!--Google Maps API + places library important, for searchbar-->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
+    <script src="/static/js/fetchWeatherData.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -52,7 +53,7 @@
     <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
 <!-- Include Chart.js adapter for Moment.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
-
+<!-- Include the weather data -->
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
 </body>
 </html>
