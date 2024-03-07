@@ -16,6 +16,8 @@ html, body {
     border: 0px;
 }
 
+/* For search bar */
+
 .map-search {
     position: absolute;
     width: 150px;
@@ -23,6 +25,7 @@ html, body {
     font-size: 16px;
 }
 
+/* For flexbox */
 .flexb {
     display: flex;
     flex-direction: column;
@@ -43,7 +46,7 @@ html, body {
     box-sizing: border-box; 
 }
 
-
+/* For side info */
 #side-info {
     display: flex;
     flex-direction: column; 
