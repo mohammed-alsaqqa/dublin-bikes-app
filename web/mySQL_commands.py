@@ -73,6 +73,12 @@ def getRecentStationData(id, conn)->dict:
     ORDER BY last_update DESC
     LIMIT 1;
     """
+    query2 = f"""
+    Select * 
+    From station
+    where station_id = '{id}'
+    LIMIT 1;
+    """
 
     try:
         
@@ -82,9 +88,13 @@ def getRecentStationData(id, conn)->dict:
         # save the query data
         result = cur.fetchall()
 
+        cur.execute(query2)
+        result2 = cur.fetchall()
+        print(result2)
+
         # put the data in a dictionary
-        data = {"station_id":id, "last_update":result[0][1], "bikes_available":result[0][2], "stands_available":result[0][3], "status":result[0][4]}
-        
+        data = {"station_id":id, "last_update":result[0][1], "bikes_available":result[0][2], "stands_available":result[0][3], "status":result[0][4],
+                "position_lat":result2[0][5], "position_long":result2[0][6], "station_name":result2[0][1]}
         # return the result
         return data
     except Exception as ee:
@@ -134,7 +144,7 @@ def getWeatherData(conn)->list:
         result = cur.fetchall()
 
         # save data in a dictionary
-        data = {"station_id":result[0][0], "wind_speed":result[0][1], "Humidity":result[0][2], "Weather":result[0][3], "last_update":result[0][4], "temperature":result[0][5]}
+        data = {"wind_speed":result[0][1], "Humidity":result[0][2], "Weather":result[0][3], "last_update":result[0][4], "temperature":result[0][5]}
 
         # return the result
         return data
@@ -169,4 +179,6 @@ def getHistoricStationData(conn, id):
 
 
 conn = createConnection()
-print(getHistoricStationData(conn,10))
+# print(getHistoricStationData(conn,10))
+# print(getWeatherData(conn))
+print(getRecentStationData(1,conn))
