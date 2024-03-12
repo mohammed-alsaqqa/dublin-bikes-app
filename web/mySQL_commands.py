@@ -1,6 +1,8 @@
 import mysql.connector 
 from dotenv import load_dotenv
 import os
+from datetime import datetime, timedelta
+
 
 load_dotenv(".env")
 PASSWORD = os.getenv("PASSWORD")
@@ -176,6 +178,91 @@ def getHistoricStationData(conn, id):
         return result  
     except Exception as ee:
         print(ee)
+
+def getDailyOverallAverages(conn):
+    """
+    This function returns the daily overall averages for all stations.
+    """
+    # Create a cursor object to execute SQL commands
+    curr = conn.cursor(dictionary=True)  # Use dictionary=True to fetch rows as dictionaries
+
+    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+    query = """
+    SELECT AVG(available_bikes) as daily_avg, DATE(FROM_UNIXTIME(last_update / 1000)) as day
+    FROM availability
+    WHERE DATE(FROM_UNIXTIME(last_update / 1000)) <= %s
+    GROUP BY day
+    ORDER BY day DESC
+    LIMIT 7;
+    """
+
+    try:
+        # Execute the query 
+        curr.execute(query, (seven_days_ago,))
+
+        # Fetch the query data
+        result = curr.fetchall()
+
+        daily_averages = [
+            {'day': row['day'], 'avg_bikes_available': round(row['daily_avg'])} 
+            for row in result
+        ]
+
+        # Return the result
+        return daily_averages  
+    except Exception as ee:
+        print(ee)
+        return []  # Return an empty list in case of an error
+
+
+
+def getHourlyOverallAverages(conn):
+    """
+    This function returns the hourly overall averages for all stations for the past 12 hours.
+    """
+    curr = conn.cursor(dictionary=True)  # Use dictionary=True to fetch rows as dictionaries
+
+    query0 = """
+    SELECT last_update from availability ORDER BY last_update DESC LIMIT 1;
+
+    """
+
+    curr.execute(query0)
+    last_time_stamp = curr.fetchall()
+    last_time_stamp = last_time_stamp[0]['last_update']/1000
+
+    query = """
+    SELECT 
+        AVG(available_bikes) AS hourly_avg, 
+        HOUR(FROM_UNIXTIME(last_update / 1000)) AS hour, 
+        DATE(FROM_UNIXTIME(last_update / 1000)) AS day
+    FROM 
+        availability
+    WHERE 
+        FROM_UNIXTIME(last_update / 1000) >= FROM_UNIXTIME(%s) - INTERVAL 12 HOUR
+    GROUP BY 
+        day, hour
+    ORDER BY 
+        day DESC, hour DESC
+    LIMIT 12;
+    """
+
+    try:
+        # Execute the query 
+        curr.execute(query, (last_time_stamp,))
+
+        # Fetch the query data
+        result = curr.fetchall()
+        
+        hourly_averages = [
+            {'day': row['day'], 'hour': row['hour'], 'avg_bikes_available': round(row['hourly_avg'])} 
+            for row in result
+        ]
+
+        return hourly_averages  
+    except Exception as ee:
+        print(ee)
+        return []  # Return an empty list in case of an error
 
 
 conn = createConnection()

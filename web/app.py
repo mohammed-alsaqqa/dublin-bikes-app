@@ -48,4 +48,21 @@ def weather():
     mc.stopConnection(conn)
     return jsonify(data)
 
+@app.route('/daily-overall-averages')
+def daily_averages():
+    conn = mc.createConnection()
+    data = mc.getDailyOverallAverages(conn)
+    mc.stopConnection(conn)
+    return jsonify(data)
+
+
+@app.route('/hourly-overall-averages')
+def hourly_averages():
+    conn = mc.createConnection()
+    data = mc.getHourlyOverallAverages(conn)
+    mc.stopConnection(conn)
+    return jsonify(data)
+
+
+
 app.run(debug=True)
