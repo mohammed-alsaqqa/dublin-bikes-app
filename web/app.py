@@ -4,6 +4,11 @@ import os
 
 app = Flask(__name__)
 
+
+@app.teardown_appcontext
+def close_db(e=None):
+    mc.stopConnection(e)
+
 @app.route('/')
 def index():
     # Renders index.html from the 'templates' folder
@@ -11,16 +16,11 @@ def index():
     return render_template('Dublinbikes.html',GMAP_API_KEY=api_key)
 
 
-@app.route('/hello/')
-def hello():
-    return "Hello World!"
-
 @app.route('/stations_json_data/')
 def stations():
     conn = mc.createConnection()
     stations = mc.getStations(conn)
     data = mc.getAllData(stations, conn)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 
@@ -28,7 +28,6 @@ def stations():
 def station(station_id):
     conn = mc.createConnection()
     data = mc.getRecentStationData(station_id, conn)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 
@@ -36,7 +35,6 @@ def station(station_id):
 def station_history(station_id):
     conn = mc.createConnection()
     data = mc.getHistoricStationData(conn, station_id)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 
@@ -45,14 +43,12 @@ def weather():
     conn = mc.createConnection()
     data = mc.getWeatherData(conn)
     print(123,data)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 @app.route('/daily-overall-averages')
 def daily_averages():
     conn = mc.createConnection()
     data = mc.getDailyOverallAverages(conn)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 
@@ -60,7 +56,6 @@ def daily_averages():
 def hourly_averages():
     conn = mc.createConnection()
     data = mc.getHourlyOverallAverages(conn)
-    mc.stopConnection(conn)
     return jsonify(data)
 
 

@@ -1,31 +1,38 @@
 import mysql.connector 
 from dotenv import load_dotenv
-import os
+from os import getenv
 from datetime import datetime, timedelta
-
+from flask import g
 
 load_dotenv(".env")
-PASSWORD = os.getenv("PASSWORD")
+PASSWORD = getenv("PASSWORD")
 
 def createConnection():
     """
     This function creates a connection to the database
     """
     # Connect to the database 
-    conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password=PASSWORD,
-    database="dublinbikes"
-    )
-    return conn
+    if 'conn' not in g:
+        g.conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password=PASSWORD,
+        database="dublinbikes"
+        )
+    return g.conn
 
 
-def stopConnection(conn):
+def stopConnection(e=None):
     """
     This function stops the connection to the database
     """
-    conn.close()
+    if e is not None:
+        # An exception occurred, you can log it, handle it, or ignore it
+        print(f"Exception occurred: {e}")
+
+    conn = g.pop('conn', None)
+    if conn is not None:
+        conn.close()
 
 
 def getStations(conn): 
@@ -92,7 +99,6 @@ def getRecentStationData(id, conn)->dict:
 
         cur.execute(query2)
         result2 = cur.fetchall()
-        print(result2)
 
         # put the data in a dictionary
         data = {"station_id":id, "last_update":result[0][1], "bikes_available":result[0][2], "stands_available":result[0][3], "status":result[0][4],
@@ -263,9 +269,3 @@ def getHourlyOverallAverages(conn):
     except Exception as ee:
         print(ee)
         return []  # Return an empty list in case of an error
-
-
-conn = createConnection()
-# print(getHistoricStationData(conn,10))
-# print(getWeatherData(conn))
-print(getRecentStationData(1,conn))
