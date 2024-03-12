@@ -19,16 +19,48 @@ function addBikeStationMarkers(map, stations) {
             title: station.station_name,
             icon: icon
         });
-   
+
         // Event listener to display a popup on hover (mouseover)
         google.maps.event.addListener(marker, 'click', function() {
+
+            // Destroy aggregate charts before showing station-specific charts
+            console.log("destroying charts");
+            console.log(chartInstances);
+            document.getElementById('side-info').innerHTML = '';
+            Object.keys(chartInstances).forEach((chartId) => {
+            
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
+                delete chartInstances[chartId]; // Remove the reference from the object
+            }
+
+            });
             popup(marker, station, map);
             showStationSideInfo(marker, station, map);
             
+            google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
+                // Clear existing charts and references
+                document.getElementById('side-info').innerHTML = '';
+                Object.keys(chartInstances).forEach((chartId) => {
+                    if (chartInstances[chartId]) {
+                        chartInstances[chartId].destroy();
+                        delete chartInstances[chartId];
+                    }
+                });
+                // Render the aggregate charts again
+                fetchAggregateDataAndRenderCharts(); // Make sure this function is defined
+            });
+
+
         });
+
+        
+
 
     });
 }
+
+
 
 
 // Function to display a popup when a marker is clicked.
@@ -261,3 +293,84 @@ function processHistoricalData(historicalData) {
         hourly: { labels: hourlyLabels, data: hourlyBikeCounts }
     };
 }
+
+function fetchAggregateDataAndRenderCharts(){
+        
+
+    // Fetch and display daily averages chart
+    fetch('/daily-overall-averages')
+    .then(response => response.json())
+    .then(data => {
+        const ctxDaily = document.createElement('canvas');
+        const dailyChartId = 'dailyAveragesChart'; // Unique identifier for the daily chart
+        ctxDaily.id = dailyChartId; // Optionally set the ID for the canvas element as well
+        document.getElementById('side-info').appendChild(ctxDaily);
+        const dailyLabels = data.map(item => item.day);
+        const dailyData = data.map(item => item.avg_bikes_available);
+        
+        // Store the chart instance using the unique chart ID
+        chartInstances[dailyChartId] = new Chart(ctxDaily, {
+            type: 'bar',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Daily Average of Available Bikes',
+                    data: dailyData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+    })
+    .catch(error => console.error('Error fetching daily averages:', error));
+
+    // Fetch and display hourly averages chart
+    fetch('/hourly-overall-averages')
+    .then(response => response.json())
+    .then(data => {
+        const ctxHourly = document.createElement('canvas');
+        const hourlyChartId = 'hourlyAveragesChart'; // Unique identifier for the hourly chart
+        ctxHourly.id = hourlyChartId; // Optionally set the ID for the canvas element as well
+        document.getElementById('side-info').appendChild(ctxHourly);
+        const hourlyLabels = data.map(item => `${item.day} ${item.hour}:00`);
+        const hourlyData = data.map(item => item.avg_bikes_available);
+
+        // Store the chart instance using the unique chart ID
+        chartInstances[hourlyChartId] = new Chart(ctxHourly, {
+            type: 'line',
+            data: {
+                labels: hourlyLabels,
+                datasets: [{
+                    label: 'Hourly Average of Available Bikes',
+                    data: hourlyData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255,99,132,1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error fetching hourly averages:', error));
+    console.log(chartInstances);
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAggregateDataAndRenderCharts();
+});
