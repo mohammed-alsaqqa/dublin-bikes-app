@@ -24,8 +24,6 @@ function addBikeStationMarkers(map, stations) {
         google.maps.event.addListener(marker, 'click', function() {
 
             // Destroy aggregate charts before showing station-specific charts
-            console.log("destroying charts");
-            console.log(chartInstances);
             document.getElementById('side-info').innerHTML = '';
             Object.keys(chartInstances).forEach((chartId) => {
             
@@ -295,8 +293,6 @@ function processHistoricalData(historicalData) {
 }
 
 function fetchAggregateDataAndRenderCharts(){
-        
-
     // Fetch and display daily averages chart
     fetch('/daily-overall-averages')
     .then(response => response.json())
