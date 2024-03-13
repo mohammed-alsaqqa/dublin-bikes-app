@@ -239,9 +239,9 @@ def getDailyOverallAverages(conn):
     query = """
     SELECT AVG(available_bikes) as daily_avg, DATE(FROM_UNIXTIME(last_update / 1000)) as day
     FROM availability
-    WHERE DATE(FROM_UNIXTIME(last_update / 1000)) <= %s
+    WHERE DATE(FROM_UNIXTIME(last_update / 1000)) >= %s
     GROUP BY day
-    ORDER BY day DESC
+    ORDER BY day ASC
     LIMIT 7;
     """
 
@@ -299,7 +299,7 @@ def getHourlyOverallAverages(conn):
     GROUP BY 
         day, hour
     ORDER BY 
-        day DESC, hour DESC
+        day DESC, hour ASC
     LIMIT 12;
     """
 
