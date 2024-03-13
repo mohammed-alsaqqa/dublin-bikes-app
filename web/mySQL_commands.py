@@ -1,29 +1,38 @@
 import mysql.connector 
 from dotenv import load_dotenv
-import os
+from os import getenv
+from datetime import datetime, timedelta
+from flask import g
 
 load_dotenv(".env")
-PASSWORD = os.getenv("PASSWORD")
+PASSWORD = getenv("PASSWORD")
 
 def createConnection():
     """
     This function creates a connection to the database
     """
     # Connect to the database 
-    conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password=PASSWORD,
-    database="dublinbikes"
-    )
-    return conn
+    if 'conn' not in g:
+        g.conn = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password=PASSWORD,
+        database="dublinbikes"
+        )
+    return g.conn
 
 
-def stopConnection(conn):
+def stopConnection(e=None):
     """
     This function stops the connection to the database
     """
-    conn.close()
+    if e is not None:
+        # An exception occurred, you can log it, handle it, or ignore it
+        print(f"Exception occurred: {e}")
+
+    conn = g.pop('conn', None)
+    if conn is not None:
+        conn.close()
 
 
 def getStations(conn): 
@@ -90,7 +99,6 @@ def getRecentStationData(id, conn)->dict:
 
         cur.execute(query2)
         result2 = cur.fetchall()
-        print(result2)
 
         # put the data in a dictionary
         data = {"station_id":id, "last_update":result[0][1], "bikes_available":result[0][2], "stands_available":result[0][3], "status":result[0][4],
@@ -151,34 +159,163 @@ def getWeatherData(conn)->list:
     except Exception as ee:
         print(ee)
 
-def getHistoricStationData(conn, id):
+def getHistoricStationData(conn, station_id):
     """
-    This function returns all the data for a given station id
+    This function returns the daily and hourly averages of available bikes for a given station id.
+    """
+    cursor = conn.cursor(dictionary=True)
+
+    query0 = """
+    SELECT last_update from availability WHERE station_id = %s ORDER BY last_update DESC LIMIT 1;
+
+    """
+
+    cursor.execute(query0, (station_id,))
+    last_time_stamp = cursor.fetchall()
+    last_time_stamp = last_time_stamp[0]['last_update']/1000
+    
+    seven_days_ago = last_time_stamp - (7 * 24 * 60 * 60)  # 7 days in seconds
+    # Adjust these SQL queries according to your actual database schema and requirements
+    query_daily = """
+    SELECT DATE(FROM_UNIXTIME(last_update / 1000)) AS day, AVG(available_bikes) AS avg_bikes
+    FROM availability
+    WHERE station_id = %s AND last_update / 1000 >= %s
+    GROUP BY day
+    ORDER BY day
+    LIMIT 8;
+    """
+
+    query_hourly = """
+    SELECT HOUR(FROM_UNIXTIME(last_update / 1000)) AS hour, AVG(available_bikes) AS avg_bikes
+    FROM availability
+    WHERE station_id = %s AND last_update / 1000 >= UNIX_TIMESTAMP( FROM_UNIXTIME(%s) - INTERVAL 24 HOUR)
+    GROUP BY hour
+    ORDER BY hour
+    LIMIT 24;
+    """
+    try:
+        # Execute daily averages query
+        cursor.execute(query_daily, (station_id,seven_days_ago,))
+        daily_results = cursor.fetchall()
+
+        # Execute hourly averages query
+        cursor.execute(query_hourly, (station_id,last_time_stamp,))
+        hourly_results = cursor.fetchall()
+
+        #change the format of the date and time
+        # Process daily data into labels and data
+        daily_labels = [day["day"].strftime("%d/%m/%Y") for day in daily_results]
+        daily_avg_bikes = [round(entry['avg_bikes']) for entry in daily_results]
+        
+        # Process hourly data into labels and data
+        hourly_labels = [f'{entry["hour"]:02}:00' for entry in hourly_results]
+        hourly_avg_bikes = [round(entry['avg_bikes']) for entry in hourly_results]
+        
+        # Structure the response as needed by the frontend
+        result = {
+            'daily': {
+                'labels': daily_labels,
+                'data': daily_avg_bikes
+            },
+            'hourly': {
+                'labels': hourly_labels,
+                'data': hourly_avg_bikes
+            }
+        }
+        return result
+
+    except Exception as ee:
+        print(ee)
+        return {}
+
+def getDailyOverallAverages(conn):
+    """
+    This function returns the daily overall averages for all stations.
     """
     # Create a cursor object to execute SQL commands
-    curr = conn.cursor()
+    curr = conn.cursor(dictionary=True)  # Use dictionary=True to fetch rows as dictionaries
 
-    # Define the SQL statement
-    query = f"""
-    SELECT *
+    seven_days_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+    query = """
+    SELECT AVG(available_bikes) as daily_avg, DATE(FROM_UNIXTIME(last_update / 1000)) as day
     FROM availability
-    WHERE station_id = '{id}'
+    WHERE DATE(FROM_UNIXTIME(last_update / 1000)) >= %s
+    GROUP BY day
+    ORDER BY day ASC
+    LIMIT 7;
     """
 
     try:
         # Execute the query 
-        curr.execute(query)
+        curr.execute(query, (seven_days_ago,))
 
-        # save the query data
+        # Fetch the query data
         result = curr.fetchall()
 
-        # return the result
-        return result  
+        # daily_averages = [
+        #     {'day': row['day'], 'avg_bikes_available': round(row['daily_avg'])} 
+        #     for row in result
+        # ]
+        daily_averages = [
+            {
+                
+                'day': row["day"].strftime("%d/%m/%Y"),
+                'avg_bikes_available': round(row['daily_avg'])
+            } 
+            for row in result
+        ]
+        # Return the result
+        return daily_averages  
     except Exception as ee:
         print(ee)
+        return {} # Return an empty list in case of an error
 
 
-conn = createConnection()
-# print(getHistoricStationData(conn,10))
-# print(getWeatherData(conn))
-print(getRecentStationData(1,conn))
+
+def getHourlyOverallAverages(conn):
+    """
+    This function returns the hourly overall averages for all stations for the past 12 hours.
+    """
+    curr = conn.cursor(dictionary=True)  # Use dictionary=True to fetch rows as dictionaries
+
+    query0 = """
+    SELECT last_update from availability ORDER BY last_update DESC LIMIT 1;
+
+    """
+
+    curr.execute(query0)
+    last_time_stamp = curr.fetchall()
+    last_time_stamp = last_time_stamp[0]['last_update']/1000
+
+    query = """
+    SELECT 
+        AVG(available_bikes) AS hourly_avg, 
+        HOUR(FROM_UNIXTIME(last_update / 1000)) AS hour, 
+        DATE(FROM_UNIXTIME(last_update / 1000)) AS day
+    FROM 
+        availability
+    WHERE 
+        FROM_UNIXTIME(last_update / 1000) >= FROM_UNIXTIME(%s) - INTERVAL 12 HOUR
+    GROUP BY 
+        day, hour
+    ORDER BY 
+        day DESC, hour ASC
+    LIMIT 12;
+    """
+
+    try:
+        # Execute the query 
+        curr.execute(query, (last_time_stamp,))
+
+        # Fetch the query data
+        result = curr.fetchall()
+        
+        hourly_averages = [
+            {'day': row['day'], 'hour': row['hour'], 'avg_bikes_available': round(row['hourly_avg'])} 
+            for row in result
+        ]
+
+        return hourly_averages  
+    except Exception as ee:
+        print(ee)
+        return []  # Return an empty list in case of an error
