@@ -19,9 +19,12 @@ function addBikeStationMarkers(map, stations) {
             title: station.station_name,
             icon: icon
         });
-   
+
         // Event listener to display a popup on hover (mouseover)
         google.maps.event.addListener(marker, 'click', function() {
+
+            // Destroy aggregate charts before showing station-specific charts
+            document.getElementById('side-info').innerHTML = '';
             popup(marker, station, map);
             showStationSideInfo(marker, station, map);
             
@@ -42,6 +45,12 @@ function popup(marker, station, map) {
         }
         currentInfoWindow.setContent(popContent);
         currentInfoWindow.open(map, marker);
+
+        google.maps.event.clearListeners(currentInfoWindow, 'closeclick'); // Clear existing listeners to avoid duplicates
+        google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
+            document.getElementById('side-info').innerHTML = '';
+            fetchAggregateDataAndRenderCharts();
+        });
     });
 }
 
@@ -63,20 +72,30 @@ function fetchLatestStationData(stationId, callback) {
     });
 }
 
+function fetchHistoricalStationData(stationId, callback) {
+    fetch(`/single_station_historical_json_data/${stationId}`) // Make a GET request to the Flask API endpoint
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => callback(data)) // Process the historical data
+    .catch(error => console.error('Error fetching historical data:', error));
+}
 
 
 function showStationSideInfo(marker, station, map) {
-    fetchHisoricalStationData(station.station_id, historicalData => {
-        const processedData = processHistoricalData(historicalData);
-        
-        createChart('daily-averages-chart', 'Daily Averages of Available Bikes', processedData.daily.labels, processedData.daily.data, 'Day');
-        createChart('hourly-averages-chart', 'Hourly Averages of Available Bikes (Last Day)', processedData.hourly.labels, processedData.hourly.data, 'Hour');
+    console.log(station.station_id);
+    fetchHistoricalStationData(station.station_id, data => {
+        document.getElementById('side-info').innerHTML = '';
+        createChart('daily-averages-chart', 'Daily Averages of Available Bikes', data.daily.labels, data.daily.data, 'Day');
+        createChart('hourly-averages-chart', 'Hourly Averages of Available Bikes (Last Day)', data.hourly.labels, data.hourly.data, 'Hour');
     });
 }
 
 
 const chartInstances = {};
-
 function createChart(canvasId, chartLabel, labels, data, xAxisLabel) {
     let canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -196,68 +215,85 @@ function renderChart(labels, bikeAverages) {
     });
 }
 
-function fetchHisoricalStationData(stationId, callback) {
-    fetch(`/single_station_historical_json_data/${stationId}`) // Make a GET request to the Flask API endpoint
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
+
+
+
+function fetchAggregateDataAndRenderCharts(){
+    // Fetch and display daily averages chart
+    console.log('fetching aggregate data 11');
+    fetch('/daily-overall-averages')
+    .then(response => response.json())
+    .then(data => {
+        const ctxDaily = document.createElement('canvas');
+        const dailyChartId = 'dailyAveragesChart'; // Unique identifier for the daily chart
+        ctxDaily.id = dailyChartId; // Optionally set the ID for the canvas element as well
+        document.getElementById('side-info').appendChild(ctxDaily);
+        const dailyLabels = data.map(item => item.day);
+        const dailyData = data.map(item => item.avg_bikes_available);
+        
+        // Store the chart instance using the unique chart ID
+        chartInstances[dailyChartId] = new Chart(ctxDaily, {
+            type: 'bar',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Daily Average of Available Bikes',
+                    data: dailyData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
     })
-    .then(data => callback(data)) // Process the historical data
-    .catch(error => console.error('Error fetching historical data:', error));
+    .catch(error => console.error('Error fetching daily averages:', error));
+
+    // Fetch and display hourly averages chart
+    fetch('/hourly-overall-averages')
+    .then(response => response.json())
+    .then(data => {
+        const ctxHourly = document.createElement('canvas');
+        const hourlyChartId = 'hourlyAveragesChart'; // Unique identifier for the hourly chart
+        ctxHourly.id = hourlyChartId; // Optionally set the ID for the canvas element as well
+        document.getElementById('side-info').appendChild(ctxHourly);
+        const hourlyLabels = data.map(item => `${item.day} ${item.hour}:00`);
+        const hourlyData = data.map(item => item.avg_bikes_available);
+
+        // Store the chart instance using the unique chart ID
+        chartInstances[hourlyChartId] = new Chart(ctxHourly, {
+            type: 'line',
+            data: {
+                labels: hourlyLabels,
+                datasets: [{
+                    label: 'Hourly Average of Available Bikes',
+                    data: hourlyData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255,99,132,1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    })
+    .catch(error => console.error('Error fetching hourly averages:', error));
+    console.log(chartInstances);
 }
 
-function processHistoricalData(historicalData) {
-    // Assuming historicalData is sorted by timestamp (oldest to newest)
-    const dailyAveragesMap = new Map();
 
-    // Process for daily averages
-    historicalData.forEach(entry => {
-        const date = new Date(entry[1]).toLocaleDateString();
-        const bikesAvailable = entry[2];
-
-        if (!dailyAveragesMap.has(date)) {
-            dailyAveragesMap.set(date, { totalBikes: bikesAvailable, count: 1 });
-        } else {
-            const current = dailyAveragesMap.get(date);
-            dailyAveragesMap.set(date, { totalBikes: current.totalBikes + bikesAvailable, count: current.count + 1 });
-        }
-    });
-
-    // Convert Map to arrays for chart
-    const dailyLabels = Array.from(dailyAveragesMap.keys()).slice(-7); // Last 7 days
-    const dailyBikeCounts = dailyLabels.map(date => {
-        const { totalBikes, count } = dailyAveragesMap.get(date);
-        return totalBikes / count;
-    });
-
-    // Process for hourly averages (last day only)
-    const lastDay = dailyLabels[dailyLabels.length - 1];
-    const hourlyAveragesMap = new Map();
-
-    historicalData.filter(entry => new Date(entry[1]).toLocaleDateString() === lastDay)
-                    .forEach(entry => {
-                        const hour = new Date(entry[1]).getHours();
-                        const bikesAvailable = entry[2];
-
-                        if (!hourlyAveragesMap.has(hour)) {
-                            hourlyAveragesMap.set(hour, { totalBikes: bikesAvailable, count: 1 });
-                        } else {
-                            const current = hourlyAveragesMap.get(hour);
-                            hourlyAveragesMap.set(hour, { totalBikes: current.totalBikes + bikesAvailable, count: current.count + 1 });
-                        }
-                    });
-
-    const hourlyLabels = Array.from(hourlyAveragesMap.keys()).map(hour => `${hour}:00`);
-    const hourlyBikeCounts = hourlyLabels.map(label => {
-        const hour = parseInt(label.split(':')[0], 10);
-        const { totalBikes, count } = hourlyAveragesMap.get(hour);
-        return totalBikes / count;
-    });
-
-    return {
-        daily: { labels: dailyLabels, data: dailyBikeCounts },
-        hourly: { labels: hourlyLabels, data: hourlyBikeCounts }
-    };
-}
+document.addEventListener('DOMContentLoaded', function() {
+    fetchAggregateDataAndRenderCharts();
+});
