@@ -8,25 +8,25 @@ function fetchWeatherData() {
             console.log(data)
             switch (data.Weather){
                 case "Clouds":
-                    weatherImage = "static/img/weatherImages/clouds.jpg"
+                    weatherImage = "static/img/weatherImages/clouds.png"
                     break;
                 case "Rain":
-                    weatherImage = "static/img/weatherImages/rainy.jpg"
+                    weatherImage = "static/img/weatherImages/rainy.gif"
                     break;
                 case "Clear":
-                    weatherImage = "static/img/weatherImages/clear.jpg"
+                    weatherImage = "static/img/weatherImages/icons8-summer.gif"
                     break;
                 case "Mist":
-                    weatherImage = "static/img/weatherImages/mist.png"
+                    weatherImage = "static/img/weatherImages/icons8-mist-96.png"
                     break;
                 case "Drizzle":
-                    weatherImage = "static/img/weatherImages/drizzle.png"
+                    weatherImage = "static/img/weatherImages/icons8-light-rain.gif"
                     break;
                 case "Snow":
-                    weatherImage = "static/img/weatherImages/snow.jpg"
+                    weatherImage = "static/img/weatherImages/icons8-snow.gif"
                     break;
                 default:
-                    weatherImage = "static/img/weatherImages/neatral.jpg"
+                    weatherImage = "static/img/weatherImages/icons8-no-image-50.png"
                     
             }
                 
