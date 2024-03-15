@@ -31,6 +31,10 @@ function fetchWeatherData() {
             }
                 
             document.getElementById('weatherImage').src = weatherImage;
+            document.getElementById('weatherInfo').innerHTML = "Temperature: "+ data.temperature;
+            document.getElementById('weatherInfo').innerHTML += "<br>Wind Speed: " + data.wind_speed;
+            document.getElementById('weatherInfo').innerHTML += "<br>Humidity: " +data.Humidity;
+            
             
         })
         .catch(error => console.error('Error fetching data:', error));  // Handle any errors
