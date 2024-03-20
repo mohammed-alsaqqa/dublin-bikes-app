@@ -337,6 +337,7 @@ function updateMarker(map, station) {
     
 // Function to set refresh interval
 function setRefresh(map, stations) {
+    // Updating the marker every 5 mins
     setInterval(() => { updateMarker(map, stations) }, 60000);
 } 
 
