@@ -49,7 +49,8 @@ function popup(marker, station, map) {
         google.maps.event.clearListeners(currentInfoWindow, 'closeclick'); // Clear existing listeners to avoid duplicates
         google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
             document.getElementById('side-info').innerHTML = '';
-            fetchAggregateDataAndRenderCharts();
+            // fetchAggregateDataAndRenderCharts();
+            renderChartForClosestStations(closestStations);
         });
     });
 }
@@ -216,84 +217,90 @@ function renderChart(labels, bikeAverages) {
 }
 
 
-
-
-function fetchAggregateDataAndRenderCharts(){
-    // Fetch and display daily averages chart
-    console.log('fetching aggregate data 11');
-    fetch('/daily-overall-averages')
-    .then(response => response.json())
-    .then(data => {
-        const ctxDaily = document.createElement('canvas');
-        const dailyChartId = 'dailyAveragesChart'; // Unique identifier for the daily chart
-        ctxDaily.id = dailyChartId; // Optionally set the ID for the canvas element as well
-        document.getElementById('side-info').appendChild(ctxDaily);
-        const dailyLabels = data.map(item => item.day);
-        const dailyData = data.map(item => item.avg_bikes_available);
-        
-        // Store the chart instance using the unique chart ID
-        chartInstances[dailyChartId] = new Chart(ctxDaily, {
-            type: 'bar',
-            data: {
-                labels: dailyLabels,
-                datasets: [{
-                    label: 'Daily Average of Available Bikes',
-                    data: dailyData,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            fetch('/stations_json_data/')
+                .then(response => response.json())
+                .then(allStations => {
+                    closestStations = getClosestStations(position, allStations);
+                    renderChartForClosestStations(closestStations);
+                })
+                .catch(error => console.error('Error fetching station data:', error));
+        }, function(error) {
+            console.error('Error getting user location:', error);
         });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+});
 
-    })
-    .catch(error => console.error('Error fetching daily averages:', error));
 
-    // Fetch and display hourly averages chart
-    fetch('/hourly-overall-averages')
-    .then(response => response.json())
-    .then(data => {
-        const ctxHourly = document.createElement('canvas');
-        const hourlyChartId = 'hourlyAveragesChart'; // Unique identifier for the hourly chart
-        ctxHourly.id = hourlyChartId; // Optionally set the ID for the canvas element as well
-        document.getElementById('side-info').appendChild(ctxHourly);
-        const hourlyLabels = data.map(item => `${item.day} ${item.hour}:00`);
-        const hourlyData = data.map(item => item.avg_bikes_available);
+function getClosestStations(userPosition, stations) {
+    // userPosition is a GeolocationPosition object
+    const userLatLng = new google.maps.LatLng(userPosition.coords.latitude, userPosition.coords.longitude);
 
-        // Store the chart instance using the unique chart ID
-        chartInstances[hourlyChartId] = new Chart(ctxHourly, {
-            type: 'line',
-            data: {
-                labels: hourlyLabels,
-                datasets: [{
-                    label: 'Hourly Average of Available Bikes',
-                    data: hourlyData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255,99,132,1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    })
-    .catch(error => console.error('Error fetching hourly averages:', error));
-    console.log(chartInstances);
+    stations.forEach(station => {
+        const stationLatLng = new google.maps.LatLng(station.position_lat, station.position_long);
+        station.distance = google.maps.geometry.spherical.computeDistanceBetween(userLatLng, stationLatLng) / 1000; // distance in km
+    });
+
+    // Sort stations by distance
+    stations.sort((a, b) => a.distance - b.distance);
+
+    // Return the 10 closest stations
+    return stations.slice(0, 5);
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
-    fetchAggregateDataAndRenderCharts();
-});
+function renderChartForClosestStations(closestStations) {
+    let canvas = document.getElementById('station-chart');
+    if (!canvas) {
+        document.getElementById('side-info').innerHTML = '<canvas id="station-chart"></canvas>';
+        canvas = document.getElementById('station-chart');
+    }
+    const ctx = document.getElementById('station-chart').getContext('2d');
+    const labels = closestStations.map(station => station.station_name);
+    const bikesData = closestStations.map(station => station.bikes_available);
+    const standsData = closestStations.map(station => station.stands_available);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Available Bikes',
+                data: bikesData,
+
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Available Stands',
+                data: standsData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    stacked: true, // Stack the bars
+                    beginAtZero: true
+                },
+                y: {
+                    stacked: true // Stack the bars
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            // maintainAspectRatio: false
+        }
+    });
+
+}
