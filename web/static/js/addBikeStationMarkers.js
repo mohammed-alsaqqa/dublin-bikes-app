@@ -283,6 +283,27 @@ function getClosestStations(userPosition, stations) {
     return stations.slice(0, 5);
 }
 
+// Function to update the marker with the latest data
+function updateMarker(map, station) {
+    fetch('') 
+    .then(response => response.json())
+    .then(updatedStations => {
+        updatedStations.forEach(updatedStation => {
+            const station = stations.find(s => s.station_id === updatedStation.station_id);
+            if (station) {
+                station.bikes_available = updatedStation.bikes_available; 
+                const upadtedI = getIcon(station); 
+                station.marker.setIcon(upadtedI); 
+            }
+        });
+    })
+    .catch(error => console.error('Error updating stations:', error));
+}
+    
+// Function to set refresh interval
+function setRefresh(map, stations) {
+    setInterval(() => { updateMarker(map, stations) }, 60000);
+} 
 
 function renderChartForClosestStations(closestStations) {
     let canvas = document.getElementById('station-chart');
