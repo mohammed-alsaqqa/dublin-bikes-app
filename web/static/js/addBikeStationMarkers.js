@@ -81,7 +81,7 @@ function popup(marker, station, map) {
         google.maps.event.clearListeners(currentInfoWindow, 'closeclick'); // Clear existing listeners to avoid duplicates
         google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
             document.getElementById('side-info').innerHTML = '';
-            // fetchAggregateDataAndRenderCharts();
+            // // fetchAggregateDataAndRenderCharts();
             renderChartForClosestStations(closestStations);
         });
     });
