@@ -18,6 +18,7 @@
         </div>
         <div class="flex-row">
             <div class="flex-item" id="map-container">
+                <input id="map-search" class="map-search" type="text" placeholder="Search location">
                 <div id="map">Map Here</div>
             </div>
             <div id="side-info" class="flex-item" id="bottom-right"></div>
@@ -31,10 +32,43 @@
         function initMap() {
             let mapOptions = {
                 center: new google.maps.LatLng(53.3498, -6.2603),
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
                 zoom: 14,
-            }
+            };
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            const input = document.getElementById('map-search');
+            const searchBox = new google.maps.places.SearchBox(input);
+            
+            //Search position within map.
+            
+            map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+            // Search bar functionality.
+            searchBox.addListener('places_changed', function() {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    if (!place.geometry) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
 
             // Fetching the static JSON with station data.
             fetch('/stations_json_data')
