@@ -21,7 +21,8 @@
                 <input id="map-search" class="map-search" type="text" placeholder="Search location">
                 <div id="map">Map Here</div>
             </div>
-            <div id="side-info" class="flex-item" id="bottom-right"></div>
+            <div id="side-info" class="flex-item" id="bottom-right"><div id="loading-message">Getting the closest stations to your current location...</div>
+        </div>
         </div>
     </div>
 
@@ -81,9 +82,10 @@
     </script>
     
     <!--Google Maps API + places library important, for searchbar-->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
-    <script src="/static/js/fetchWeatherData.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
+    <script src="/static/js/fetchWeatherData.js"></script>
+    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Include Moment.js library -->
