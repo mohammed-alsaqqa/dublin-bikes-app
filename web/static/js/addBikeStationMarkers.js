@@ -1,24 +1,48 @@
 // Global variable for the popup window.
 let currentInfoWindow = null;
+// Storing all markers for clustering
+const markers = [];
+
+// Icons defined on given bike availability
+const icons = {
+    low: "/static/img/Red Bike.png",
+    mid: "/static/img/Blue Bike.png",
+    high: "/static/img/Green Bike.png"
+}
+
+// Function which decides which icon to use
+// Can change values later
+function getIcon(station) {
+    const bikeAvail = station.bikes_available; 
+    if (bikeAvail <= 5) {
+        return icons.low;
+    } else if (bikeAvail <= 10) {
+        return icons.mid;
+    } else {
+        return icons.high;
+    }
+}
 
 // Function for adding markers to the map for each station. 
 function addBikeStationMarkers(map, stations) {
-    
-    const icon = {
-    url: "/static/img/Bike.png",
-    scaledSize: new google.maps.Size(30, 30),
-    };
     
     // We want to Loop through the stations array and add a marker for each station.
     stations.forEach(station => {
         // console.log(station);
         const latLng = new google.maps.LatLng(station.position_lat, station.position_long);
-        const marker = new google.maps.Marker({
-            position: latLng,
+        
+         const marker = new google.maps.Marker({
+            position: latLng, 
             map: map,
             title: station.station_name,
-            icon: icon
-        });
+            icon: {
+                url: getIcon(station),
+            position }
+         });
+ 
+        station.marker = marker; 
+        // Push the marker into the markers array here
+        markers.push(marker);
 
         // Event listener to display a popup on hover (mouseover)
         google.maps.event.addListener(marker, 'click', function() {
@@ -27,9 +51,10 @@ function addBikeStationMarkers(map, stations) {
             document.getElementById('side-info').innerHTML = '';
             popup(marker, station, map);
             showStationSideInfo(marker, station, map);
-            
         });
-
+    });
+    new MarkerClusterer(map, markers, {
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
     });
 }
 
@@ -293,6 +318,27 @@ function fetchAggregateDataAndRenderCharts(){
     console.log(chartInstances);
 }
 
+// Function to update the marker with the latest data
+function updateMarker(map, station) {
+    fetch('') 
+    .then(response => response.json())
+    .then(updatedStations => {
+        updatedStations.forEach(updatedStation => {
+            const station = stations.find(s => s.station_id === updatedStation.station_id);
+            if (station) {
+                station.bikes_available = updatedStation.bikes_available; 
+                const upadtedI = getIcon(station); 
+                station.marker.setIcon(upadtedI); 
+            }
+        });
+    })
+    .catch(error => console.error('Error updating stations:', error));
+}
+    
+// Function to set refresh interval
+function setRefresh(map, stations) {
+    setInterval(() => { updateMarker(map, stations) }, 60000);
+} 
 
 document.addEventListener('DOMContentLoaded', function() {
     fetchAggregateDataAndRenderCharts();
