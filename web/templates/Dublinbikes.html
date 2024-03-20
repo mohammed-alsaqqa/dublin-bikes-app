@@ -76,16 +76,13 @@
             .then(response => response.json())
             .then(data => {
             addBikeStationMarkers(map, data);
-            updateMarker(map, data);                                                                   
     })
             .catch(error => console.error('Error loading JSON data:', error));
         }
     </script>
     
     <!--Google Maps API + places library important, for searchbar-->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
-
-    <script src="/static/js/fetchWeatherData.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
