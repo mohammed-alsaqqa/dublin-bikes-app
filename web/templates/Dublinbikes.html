@@ -37,6 +37,14 @@
                 streetViewControl: false,
                 fullscreenControl: false,
                 zoom: 14,
+                styles: [
+                    {
+                        "featureType": "poi",
+                        "stylers": [
+                            { "visibility": "off" }
+                        ]
+                    },
+                    {
             };
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
