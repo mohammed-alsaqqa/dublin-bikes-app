@@ -331,7 +331,7 @@ function renderChartForClosestStations(closestStations) {
 
 // Function to update the marker with the latest data
 function updateMarker(map, station) {
-    fetch('') 
+    fetch('/stations_json_data/') 
     .then(response => response.json())
     .then(updatedStations => {
         updatedStations.forEach(updatedStation => {
