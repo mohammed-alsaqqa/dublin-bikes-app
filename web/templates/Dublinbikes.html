@@ -46,6 +46,7 @@
                     },
                     {
             };
+        }
 
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
@@ -84,6 +85,7 @@
             .then(response => response.json())
             .then(data => {
             addBikeStationMarkers(map, data);
+            updateMarker(map, data);
     })
             .catch(error => console.error('Error loading JSON data:', error));
         }
@@ -91,6 +93,8 @@
     
     <!--Google Maps API + places library important, for searchbar-->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
+    <!-- For clustering the markers-->
+    <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
