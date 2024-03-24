@@ -241,7 +241,6 @@ function renderChart(labels, bikeAverages) {
     });
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -329,3 +328,25 @@ function renderChartForClosestStations(closestStations) {
     });
 
 }
+
+// Function to update the marker with the latest data
+function updateMarker(map, station) {
+    fetch('') 
+    .then(response => response.json())
+    .then(updatedStations => {
+        updatedStations.forEach(updatedStation => {
+            const station = stations.find(s => s.station_id === updatedStation.station_id);
+            if (station) {
+                station.bikes_available = updatedStation.bikes_available; 
+                const upadtedI = getIcon(station); 
+                station.marker.setIcon(upadtedI); 
+            }
+        });
+    })
+    .catch(error => console.error('Error updating markers:', error));
+}
+
+// Function to set refresh interval
+function setRefresh(map, stations) {
+    setInterval(() => { updateMarker(map, stations) }, 60000);
+} 
