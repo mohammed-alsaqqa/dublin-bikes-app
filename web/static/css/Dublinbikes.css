@@ -83,6 +83,7 @@ html, body {
 
 /* For map container */
 #map-container {
+    position: relative;
     flex: 3; /* Increases size, taking more space */
 }
 
