@@ -5,22 +5,31 @@ const markers = [];
 
 // Icons defined on given bike availability
 const icons = {
-    low: "/static/img/Red Bike.png",
-    mid: "/static/img/Blue Bike.png",
-    high: "/static/img/Green Bike.png"
+    low: "/static/img/bikeImages/Red-Bike.png",
+    mid: "/static/img/bikeImages/Blue-Bike.png",
+    high: "/static/img/bikeImages/Green-Bike.png"
 }
 
 // Function which decides which icon to use
 // Can change values later
 function getIcon(station) {
-    const bikeAvail = station.bikes_available; 
+    const bikeAvail = station.bikes_available;
+    let iconPath;
     if (bikeAvail <= 5) {
-        return icons.low;
+        iconPath = icons.low;
     } else if (bikeAvail <= 10) {
-        return icons.mid;
+        iconPath = icons.mid;
     } else {
-        return icons.high;
+        iconPath = icons.high;
     }
+
+    // To help display the icon correctly
+    return {
+        url: iconPath,
+        scaledSize: new google.maps.Size(25, 35), 
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(12, 17)
+    };
 }
 
 // Function for adding markers to the map for each station. 
@@ -31,14 +40,12 @@ function addBikeStationMarkers(map, stations) {
         // console.log(station);
         const latLng = new google.maps.LatLng(station.position_lat, station.position_long);
         
-         const marker = new google.maps.Marker({
+        const marker = new google.maps.Marker({
             position: latLng, 
             map: map,
             title: station.station_name,
-            icon: {
-                url: getIcon(station),
-            position }
-         });
+            icon: getIcon(station)
+        });
  
         station.marker = marker; 
         // Push the marker into the markers array here
@@ -330,16 +337,16 @@ function renderChartForClosestStations(closestStations) {
 }
 
 // Function to update the marker with the latest data
-function updateMarker(map, station) {
+function updateMarker(map) {
     fetch('/stations_json_data/') 
     .then(response => response.json())
     .then(updatedStations => {
-        updatedStations.forEach(updatedStation => {
-            const station = stations.find(s => s.station_id === updatedStation.station_id);
-            if (station) {
-                station.bikes_available = updatedStation.bikes_available; 
-                const upadtedI = getIcon(station); 
-                station.marker.setIcon(upadtedI); 
+        updatedStations.forEach(updatedStationData => {
+            const stationToUpdate = stations.find(s => s.station_id === updatedStationData.station_id);
+            if (stationToUpdate && stationToUpdate.marker) {
+                stationToUpdate.bikes_available = updatedStationData.bikes_available;
+                const updatedIcon = getIcon(stationToUpdate);
+                stationToUpdate.marker.setIcon(updatedIcon);
             }
         });
     })
