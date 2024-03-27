@@ -22,15 +22,15 @@
                 <div id="map">Map Here</div>
                 <div id="Legend">
                     <div class="availability-item">
-                        <img src="Red Bike.png" alt="Low Availability" class="bike-availability-img">
+                        <img src="/static/img/bikeImages/Red-Bike.png" alt="Low Availability" class="bike-availability-img">
                         <span>Low Availability</span>
                     </div>
                     <div class="availability-item">
-                        <img src="Blue Bike.png" alt="Medium Availability" class="bike-availability-img">
+                        <img src="/static/img/bikeImages/Blue-Bike.png" alt="Medium Availability" class="bike-availability-img">
                         <span>Medium Availability</span>
                     </div>
                     <div class="availability-item">
-                        <img src="Green Bike.png" alt="High Availability" class="bike-availability-img">
+                        <img src="/static/img/bikeImages/Green-Bike.png" alt="High Availability" class="bike-availability-img">
                         <span>High Availability</span>
                     </div>
                 </div>
@@ -52,16 +52,14 @@
                 fullscreenControl: false,
                 zoom: 14,
                 styles: [
-                    {
-                        "featureType": "poi",
-                        "stylers": [
-                            { "visibility": "off" }
-                        ]
-                    },
-                    {
+    {
+        "featureType": "poi",
+        "stylers": [
+            { "visibility": "off" }
+        ]
+    }
+]
             };
-        }
-
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
             const input = document.getElementById('map-search');
