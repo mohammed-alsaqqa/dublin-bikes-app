@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+    
+    <title>Dublin Bikes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
+    <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
 
 </head>
 <body>
@@ -11,13 +14,47 @@
     <div class="flexb">
         <div class="flex-row">
             <div class="flex-item" id="top-left">Dublin Bikes</div>
-            <div class="flex-item" id="top-right">Weather</div>
+            <div class="flex-item" id="top-right">
+                <img id="weatherImage"></img>
+                <p id="weatherInfo"></p>
+            </div>
         </div>
         <div class="flex-row">
-            <div class="flex-item" id="map-container">
-                <div id="map">Map Here</div>
+            <div class="flex-item" id="journey-planner-div">
+                <div id="journey-form-div">
+                    <h2>Journey Planner</h2>
+                    <form id="journey-form">
+                        <label for="start">Start:</label>
+                        <input type="text" id="start" name="start" placeholder="Enter start location">
+                        <br>
+                        <label for="end">End:</label>
+                        <input type="text" id="end" name="end" placeholder="Enter end location">
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
             </div>
-            <div id="side-info" class="flex-item" id="bottom-right"></div>
+            <div class="flex-item" id="map-container">
+                <button onclick="showhide()" id="journey-planner-button">Journey Planner</button>
+                
+                <input id="map-search" class="map-search" type="text" placeholder="Search location">
+                <div id="map">Map Here</div>
+                <div id="Legend">
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Red-Bike.png" alt="Low Availability" class="bike-availability-img">
+                        <span>Low Availability</span>
+                    </div>
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Blue-Bike.png" alt="Medium Availability" class="bike-availability-img">
+                        <span>Medium Availability</span>
+                    </div>
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Green-Bike.png" alt="High Availability" class="bike-availability-img">
+                        <span>High Availability</span>
+                    </div>
+                </div>
+            </div>
+            <div id="side-info" class="flex-item" id="bottom-right"><div id="loading-message">Getting the closest stations to your current location...</div>
+        </div>
         </div>
     </div>
 
@@ -28,31 +65,81 @@
         function initMap() {
             let mapOptions = {
                 center: new google.maps.LatLng(53.3498, -6.2603),
-                zoom: 14,
-            }
-
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+                gestureHandling: 'cooperative', 
+                zoom: 13,
+                styles: [
+    {
+        "featureType": "poi",
+        "stylers": [
+            { "visibility": "off" }
+        ]
+    }
+]
+            };
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+            const input = document.getElementById('map-search');
+            const searchBox = new google.maps.places.SearchBox(input);
+            
+            //Search position within map.
+            
+            map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
+
+            // Search bar functionality.
+            searchBox.addListener('places_changed', function() {
+                const places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                const bounds = new google.maps.LatLngBounds();
+                places.forEach(function(place) {
+                    if (!place.geometry) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+
             // Fetching the static JSON with station data.
-            fetch('/static/js/DublinBikes.json')
+            fetch('/stations_json_data')
             .then(response => response.json())
             .then(data => {
-            addBikeStationMarkers(map, data.records);
+            addBikeStationMarkers(map, data);
+            updateMarker(map, data);
     })
             .catch(error => console.error('Error loading JSON data:', error));
         }
     </script>
     
     <!--Google Maps API + places library important, for searchbar-->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
+    <!-- For clustering the markers-->
+    <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
+    <script src="/static/js/fetchWeatherData.js"></script>
+    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
+    <script src="/static/js/fetchWeatherData.js"></script>
+    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Include Moment.js library -->
     <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
 <!-- Include Chart.js adapter for Moment.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
-
+<!-- Include the weather data -->
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
+    <!-- <script src="/static/js/displayAggregateHistoricalData.js"></script> -->
+    <script src="/static/js/journey-planenr.js"></script>
 </body>
 </html>
