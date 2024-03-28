@@ -23,20 +23,14 @@
             <div class="flex-item" id="journey-planner-div">
                 <div id="journey-form-div">
                     <h2>Journey Planner</h2>
-                    <form id="journey-form">
-                        <label for="start">Start:</label>
-                        <input type="text" id="start" name="start" placeholder="Enter start location">
-                        <br>
-                        <label for="end">End:</label>
-                        <input type="text" id="end" name="end" placeholder="Enter end location">
-                        <input type="submit" value="Submit">
-                    </form>
+                    <input id="map-search" class="map-search" type="text" placeholder="Search location">
+
+                    
                 </div>
             </div>
             <div class="flex-item" id="map-container">
                 <button onclick="showhide()" id="journey-planner-button">Journey Planner</button>
                 
-                <input id="map-search" class="map-search" type="text" placeholder="Search location">
                 <div id="map">Map Here</div>
                 <div id="Legend">
                     <div class="availability-item">
@@ -84,9 +78,9 @@
             const input = document.getElementById('map-search');
             const searchBox = new google.maps.places.SearchBox(input);
             
+            
             //Search position within map.
             
-            map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
             // Search bar functionality.
             searchBox.addListener('places_changed', function() {
