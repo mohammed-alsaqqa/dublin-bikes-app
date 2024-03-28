@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+    
+    <title>Dublin Bikes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
     <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
 
@@ -36,6 +38,20 @@
                 
                 <input id="map-search" class="map-search" type="text" placeholder="Search location">
                 <div id="map">Map Here</div>
+                <div id="Legend">
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Red-Bike.png" alt="Low Availability" class="bike-availability-img">
+                        <span>Low Availability</span>
+                    </div>
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Blue-Bike.png" alt="Medium Availability" class="bike-availability-img">
+                        <span>Medium Availability</span>
+                    </div>
+                    <div class="availability-item">
+                        <img src="/static/img/bikeImages/Green-Bike.png" alt="High Availability" class="bike-availability-img">
+                        <span>High Availability</span>
+                    </div>
+                </div>
             </div>
             <div id="side-info" class="flex-item" id="bottom-right"><div id="loading-message">Getting the closest stations to your current location...</div>
         </div>
@@ -52,9 +68,17 @@
                 mapTypeControl: false,
                 streetViewControl: false,
                 fullscreenControl: false,
-                zoom: 14,
+                gestureHandling: 'cooperative', 
+                zoom: 13,
+                styles: [
+    {
+        "featureType": "poi",
+        "stylers": [
+            { "visibility": "off" }
+        ]
+    }
+]
             };
-
             let map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
             const input = document.getElementById('map-search');
@@ -92,6 +116,7 @@
             .then(response => response.json())
             .then(data => {
             addBikeStationMarkers(map, data);
+            updateMarker(map, data);
     })
             .catch(error => console.error('Error loading JSON data:', error));
         }
@@ -99,7 +124,11 @@
     
     <!--Google Maps API + places library important, for searchbar-->
     <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
+    <!-- For clustering the markers-->
+    <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
+    <script src="/static/js/fetchWeatherData.js"></script>
+    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <script src="/static/js/fetchWeatherData.js"></script>
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <!-- Include Chart.js -->
