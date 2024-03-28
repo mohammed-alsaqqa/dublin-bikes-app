@@ -1,32 +1,67 @@
 // Global variable for the popup window.
 let currentInfoWindow = null;
+// Storing all markers for clustering
+const markers = [];
+
+// Icons defined on given bike availability
+const icons = {
+    low: "/static/img/bikeImages/Red-Bike.png",
+    mid: "/static/img/bikeImages/Blue-Bike.png",
+    high: "/static/img/bikeImages/Green-Bike.png"
+}
+
+// Function which decides which icon to use
+// Can change values later
+function getIcon(station) {
+    const bikeAvail = station.bikes_available;
+    let iconPath;
+    if (bikeAvail <= 5) {
+        iconPath = icons.low;
+    } else if (bikeAvail <= 10) {
+        iconPath = icons.mid;
+    } else {
+        iconPath = icons.high;
+    }
+
+    // To help display the icon correctly
+    return {
+        url: iconPath,
+        scaledSize: new google.maps.Size(25, 35), 
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(12, 17)
+    };
+}
 
 // Function for adding markers to the map for each station. 
 function addBikeStationMarkers(map, stations) {
     
-    const icon = {
-    url: "/static/img/Bike.png",
-    scaledSize: new google.maps.Size(30, 30),
-    };
-    
     // We want to Loop through the stations array and add a marker for each station.
     stations.forEach(station => {
-        console.log(station);
-        const latLng = new google.maps.LatLng(station[4], station[5]);
+        // console.log(station);
+        const latLng = new google.maps.LatLng(station.position_lat, station.position_long);
+        
         const marker = new google.maps.Marker({
-            position: latLng,
+            position: latLng, 
             map: map,
-            title: station[2],
-            icon: icon
+            title: station.station_name,
+            icon: getIcon(station)
         });
-   
+ 
+        station.marker = marker; 
+        // Push the marker into the markers array here
+        markers.push(marker);
+
         // Event listener to display a popup on hover (mouseover)
         google.maps.event.addListener(marker, 'click', function() {
+
+            // Destroy aggregate charts before showing station-specific charts
+            document.getElementById('side-info').innerHTML = '';
             popup(marker, station, map);
             showStationSideInfo(marker, station, map);
-            
         });
-
+    });
+    new MarkerClusterer(map, markers, {
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
     });
 }
 
@@ -34,14 +69,21 @@ function addBikeStationMarkers(map, stations) {
 // Function to display a popup when a marker is clicked.
 function popup(marker, station, map) {
     // Fetch the latest data for the clicked station
-    fetchLatestStationData(station[0], (latestData) => {
+    fetchLatestStationData(station.station_id, (latestData) => {
         // Update the popup content with the latest data
-        const popContent = `<div><h3>${station[2]}</h3><p>Bikes available: ${latestData.bikes_available}<br>Stands available: ${latestData.stands_available}</p></div>`;
+        const popContent = `<div><h3>${station.station_name}</h3><p>Bikes available: ${latestData.bikes_available}<br>Stands available: ${latestData.stands_available}</p></div>`;
         if (!currentInfoWindow) {
             currentInfoWindow = new google.maps.InfoWindow();
         }
         currentInfoWindow.setContent(popContent);
         currentInfoWindow.open(map, marker);
+
+        google.maps.event.clearListeners(currentInfoWindow, 'closeclick'); // Clear existing listeners to avoid duplicates
+        google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
+            document.getElementById('side-info').innerHTML = '';
+            // // fetchAggregateDataAndRenderCharts();
+            renderChartForClosestStations(closestStations);
+        });
     });
 }
 
@@ -63,20 +105,30 @@ function fetchLatestStationData(stationId, callback) {
     });
 }
 
+function fetchHistoricalStationData(stationId, callback) {
+    fetch(`/single_station_historical_json_data/${stationId}`) // Make a GET request to the Flask API endpoint
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => callback(data)) // Process the historical data
+    .catch(error => console.error('Error fetching historical data:', error));
+}
 
 
 function showStationSideInfo(marker, station, map) {
-    fetchHisoricalStationData(station[0], historicalData => {
-        const processedData = processHistoricalData(historicalData);
-        
-        createChart('daily-averages-chart', 'Daily Averages of Available Bikes', processedData.daily.labels, processedData.daily.data, 'Day');
-        createChart('hourly-averages-chart', 'Hourly Averages of Available Bikes (Last Day)', processedData.hourly.labels, processedData.hourly.data, 'Hour');
+    console.log(station.station_id);
+    fetchHistoricalStationData(station.station_id, data => {
+        document.getElementById('side-info').innerHTML = '';
+        createChart('daily-averages-chart', 'Daily Averages of Available Bikes', data.daily.labels, data.daily.data, 'Day');
+        createChart('hourly-averages-chart', 'Hourly Averages of Available Bikes (Last Day)', data.hourly.labels, data.hourly.data, 'Hour');
     });
 }
 
 
 const chartInstances = {};
-
 function createChart(canvasId, chartLabel, labels, data, xAxisLabel) {
     let canvas = document.getElementById(canvasId);
     if (!canvas) {
@@ -196,68 +248,111 @@ function renderChart(labels, bikeAverages) {
     });
 }
 
-function fetchHisoricalStationData(stationId, callback) {
-    fetch(`/single_station_historical_json_data/${stationId}`) // Make a GET request to the Flask API endpoint
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
+document.addEventListener('DOMContentLoaded', function() {
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            fetch('/stations_json_data/')
+                .then(response => response.json())
+                .then(allStations => {
+                    closestStations = getClosestStations(position, allStations);
+                    renderChartForClosestStations(closestStations);
+                })
+                .catch(error => console.error('Error fetching station data:', error));
+        }, function(error) {
+            console.error('Error getting user location:', error);
+        });
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+});
+
+
+function getClosestStations(userPosition, stations) {
+    // userPosition is a GeolocationPosition object
+    const userLatLng = new google.maps.LatLng(userPosition.coords.latitude, userPosition.coords.longitude);
+
+    stations.forEach(station => {
+        const stationLatLng = new google.maps.LatLng(station.position_lat, station.position_long);
+        station.distance = google.maps.geometry.spherical.computeDistanceBetween(userLatLng, stationLatLng) / 1000; // distance in km
+    });
+
+    // Sort stations by distance
+    stations.sort((a, b) => a.distance - b.distance);
+
+    // Return the 10 closest stations
+    return stations.slice(0, 5);
+}
+    
+function renderChartForClosestStations(closestStations) {
+    let canvas = document.getElementById('station-chart');
+    if (!canvas) {
+        document.getElementById('side-info').innerHTML = '<canvas id="station-chart"></canvas>';
+        canvas = document.getElementById('station-chart');
+    }
+    const ctx = document.getElementById('station-chart').getContext('2d');
+    const labels = closestStations.map(station => station.station_name);
+    const bikesData = closestStations.map(station => station.bikes_available);
+    const standsData = closestStations.map(station => station.stands_available);
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Available Bikes',
+                data: bikesData,
+
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Available Stands',
+                data: standsData,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    stacked: true, // Stack the bars
+                    beginAtZero: true
+                },
+                y: {
+                    stacked: true // Stack the bars
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            // maintainAspectRatio: false
         }
-        return response.json();
+    });
+
+}
+
+// Function to update the marker with the latest data
+function updateMarker(map) {
+    fetch('/stations_json_data/') 
+    .then(response => response.json())
+    .then(updatedStations => {
+        updatedStations.forEach(updatedStationData => {
+            const stationToUpdate = stations.find(s => s.station_id === updatedStationData.station_id);
+            if (stationToUpdate && stationToUpdate.marker) {
+                stationToUpdate.bikes_available = updatedStationData.bikes_available;
+                const updatedIcon = getIcon(stationToUpdate);
+                stationToUpdate.marker.setIcon(updatedIcon);
+            }
+        });
     })
-    .then(data => callback(data)) // Process the historical data
-    .catch(error => console.error('Error fetching historical data:', error));
+    .catch(error => console.error('Error updating markers:', error));
 }
 
-function processHistoricalData(historicalData) {
-    // Assuming historicalData is sorted by timestamp (oldest to newest)
-    const dailyAveragesMap = new Map();
-
-    // Process for daily averages
-    historicalData.forEach(entry => {
-        const date = new Date(entry[1]).toLocaleDateString();
-        const bikesAvailable = entry[2];
-
-        if (!dailyAveragesMap.has(date)) {
-            dailyAveragesMap.set(date, { totalBikes: bikesAvailable, count: 1 });
-        } else {
-            const current = dailyAveragesMap.get(date);
-            dailyAveragesMap.set(date, { totalBikes: current.totalBikes + bikesAvailable, count: current.count + 1 });
-        }
-    });
-
-    // Convert Map to arrays for chart
-    const dailyLabels = Array.from(dailyAveragesMap.keys()).slice(-7); // Last 7 days
-    const dailyBikeCounts = dailyLabels.map(date => {
-        const { totalBikes, count } = dailyAveragesMap.get(date);
-        return totalBikes / count;
-    });
-
-    // Process for hourly averages (last day only)
-    const lastDay = dailyLabels[dailyLabels.length - 1];
-    const hourlyAveragesMap = new Map();
-
-    historicalData.filter(entry => new Date(entry[1]).toLocaleDateString() === lastDay)
-                    .forEach(entry => {
-                        const hour = new Date(entry[1]).getHours();
-                        const bikesAvailable = entry[2];
-
-                        if (!hourlyAveragesMap.has(hour)) {
-                            hourlyAveragesMap.set(hour, { totalBikes: bikesAvailable, count: 1 });
-                        } else {
-                            const current = hourlyAveragesMap.get(hour);
-                            hourlyAveragesMap.set(hour, { totalBikes: current.totalBikes + bikesAvailable, count: current.count + 1 });
-                        }
-                    });
-
-    const hourlyLabels = Array.from(hourlyAveragesMap.keys()).map(hour => `${hour}:00`);
-    const hourlyBikeCounts = hourlyLabels.map(label => {
-        const hour = parseInt(label.split(':')[0], 10);
-        const { totalBikes, count } = hourlyAveragesMap.get(hour);
-        return totalBikes / count;
-    });
-
-    return {
-        daily: { labels: dailyLabels, data: dailyBikeCounts },
-        hourly: { labels: hourlyLabels, data: hourlyBikeCounts }
-    };
-}
+// Function to set refresh interval
+function setRefresh(map, stations) {
+    setInterval(() => { updateMarker(map, stations) }, 60000);
+} 
