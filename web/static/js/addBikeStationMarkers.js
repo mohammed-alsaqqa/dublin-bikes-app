@@ -1,24 +1,55 @@
 // Global variable for the popup window.
 let currentInfoWindow = null;
+// Storing all markers for clustering
+const markers = [];
+
+// Icons defined on given bike availability
+const icons = {
+    low: "/static/img/bikeImages/Red-Bike.png",
+    mid: "/static/img/bikeImages/Blue-Bike.png",
+    high: "/static/img/bikeImages/Green-Bike.png"
+}
+
+// Function which decides which icon to use
+// Can change values later
+function getIcon(station) {
+    const bikeAvail = station.bikes_available;
+    let iconPath;
+    if (bikeAvail <= 5) {
+        iconPath = icons.low;
+    } else if (bikeAvail <= 10) {
+        iconPath = icons.mid;
+    } else {
+        iconPath = icons.high;
+    }
+
+    // To help display the icon correctly
+    return {
+        url: iconPath,
+        scaledSize: new google.maps.Size(25, 35), 
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(12, 17)
+    };
+}
 
 // Function for adding markers to the map for each station. 
 function addBikeStationMarkers(map, stations) {
-    
-    const icon = {
-    url: "/static/img/Bike.png",
-    scaledSize: new google.maps.Size(30, 30),
-    };
     
     // We want to Loop through the stations array and add a marker for each station.
     stations.forEach(station => {
         // console.log(station);
         const latLng = new google.maps.LatLng(station.position_lat, station.position_long);
+        
         const marker = new google.maps.Marker({
-            position: latLng,
+            position: latLng, 
             map: map,
             title: station.station_name,
-            icon: icon
+            icon: getIcon(station)
         });
+ 
+        station.marker = marker; 
+        // Push the marker into the markers array here
+        markers.push(marker);
 
         // Event listener to display a popup on hover (mouseover)
         google.maps.event.addListener(marker, 'click', function() {
@@ -27,9 +58,10 @@ function addBikeStationMarkers(map, stations) {
             document.getElementById('side-info').innerHTML = '';
             popup(marker, station, map);
             showStationSideInfo(marker, station, map);
-            
         });
-
+    });
+    new MarkerClusterer(map, markers, {
+        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
     });
 }
 
@@ -49,7 +81,7 @@ function popup(marker, station, map) {
         google.maps.event.clearListeners(currentInfoWindow, 'closeclick'); // Clear existing listeners to avoid duplicates
         google.maps.event.addListener(currentInfoWindow, 'closeclick', function() {
             document.getElementById('side-info').innerHTML = '';
-            // fetchAggregateDataAndRenderCharts();
+            // // fetchAggregateDataAndRenderCharts();
             renderChartForClosestStations(closestStations);
         });
     });
@@ -216,7 +248,6 @@ function renderChart(labels, bikeAverages) {
     });
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -251,8 +282,7 @@ function getClosestStations(userPosition, stations) {
     // Return the 10 closest stations
     return stations.slice(0, 5);
 }
-
-
+    
 function renderChartForClosestStations(closestStations) {
     let canvas = document.getElementById('station-chart');
     if (!canvas) {
@@ -304,3 +334,25 @@ function renderChartForClosestStations(closestStations) {
     });
 
 }
+
+// Function to update the marker with the latest data
+function updateMarker(map) {
+    fetch('/stations_json_data/') 
+    .then(response => response.json())
+    .then(updatedStations => {
+        updatedStations.forEach(updatedStationData => {
+            const stationToUpdate = stations.find(s => s.station_id === updatedStationData.station_id);
+            if (stationToUpdate && stationToUpdate.marker) {
+                stationToUpdate.bikes_available = updatedStationData.bikes_available;
+                const updatedIcon = getIcon(stationToUpdate);
+                stationToUpdate.marker.setIcon(updatedIcon);
+            }
+        });
+    })
+    .catch(error => console.error('Error updating markers:', error));
+}
+
+// Function to set refresh interval
+function setRefresh(map, stations) {
+    setInterval(() => { updateMarker(map, stations) }, 60000);
+} 
