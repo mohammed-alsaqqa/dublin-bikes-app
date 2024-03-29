@@ -98,7 +98,7 @@ function closestThreeStations(location, htmlID) {
       checkboxes.innerHTML = ""; // Clear previous checkboxes
       closestStations.forEach((item) => {
         let div = document.createElement("div");
-        div.innerHTML = `<input type="radio" name="start" value="${item.station.station_name}">${item.station.station_name}`;
+        div.innerHTML = `<input type="radio" name=${htmlID} value="${item.station.station_name}">${item.station.station_name}`;
         checkboxes.appendChild(div);
       });
     })
