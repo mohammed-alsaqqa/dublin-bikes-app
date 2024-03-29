@@ -5,7 +5,7 @@
     <title>Dublin Bikes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
-    
+
     <!--Google Maps API + places library important, for searchbar-->
     <script async src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
 
@@ -26,11 +26,16 @@
                 <div id="journey-form-div">
                     <h2>Journey Planner</h2>
                     <input id="map-search-start" class="map-search" type="text" placeholder="Search location">
+                    <br><br>
                     <div id="checkboxes-start">
 
                     </div>
-                    <br><br><br>
+                    <br><br>
                     <input id="map-search-fin" class="map-search" type="text" placeholder="Search location">
+                    <br><br>
+                    <div id="checkboxes-fin">
+
+                    </div>
 
                     
                 </div>
@@ -66,9 +71,8 @@
     <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
-    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <script src="/static/js/fetchWeatherData.js"></script>
-    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
+
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Include Moment.js library -->
@@ -76,8 +80,6 @@
 <!-- Include Chart.js adapter for Moment.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
 <!-- Include the weather data -->
-    <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
-    <!-- <script src="/static/js/displayAggregateHistoricalData.js"></script> -->
     <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
 </body>
 </html>
