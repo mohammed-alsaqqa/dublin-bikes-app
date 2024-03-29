@@ -5,7 +5,9 @@
     <title>Dublin Bikes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
-    <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
+    
+    <!--Google Maps API + places library important, for searchbar-->
+    <script async src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
 
 </head>
 <body>
@@ -23,7 +25,12 @@
             <div class="flex-item" id="journey-planner-div">
                 <div id="journey-form-div">
                     <h2>Journey Planner</h2>
-                    <input id="map-search" class="map-search" type="text" placeholder="Search location">
+                    <input id="map-search-start" class="map-search" type="text" placeholder="Search location">
+                    <div id="checkboxes-start">
+
+                    </div>
+                    <br><br><br>
+                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search location">
 
                     
                 </div>
@@ -52,73 +59,10 @@
         </div>
     </div>
 
-    <!--Google maps API script-->
-    <script>
 
-        // Initialising the map + setting its parameters.
-        function initMap() {
-            let mapOptions = {
-                center: new google.maps.LatLng(53.3498, -6.2603),
-                mapTypeControl: false,
-                streetViewControl: false,
-                fullscreenControl: false,
-                gestureHandling: 'cooperative', 
-                zoom: 13,
-                styles: [
-    {
-        "featureType": "poi",
-        "stylers": [
-            { "visibility": "off" }
-        ]
-    }
-]
-            };
-            let map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-            const input = document.getElementById('map-search');
-            const searchBox = new google.maps.places.SearchBox(input);
-            
-            
-            //Search position within map.
-            
-
-            // Search bar functionality.
-            searchBox.addListener('places_changed', function() {
-                const places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                    return;
-                }
-
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach(function(place) {
-                    if (!place.geometry) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-
-            // Fetching the static JSON with station data.
-            fetch('/stations_json_data')
-            .then(response => response.json())
-            .then(data => {
-            addBikeStationMarkers(map, data);
-            updateMarker(map, data);
-    })
-            .catch(error => console.error('Error loading JSON data:', error));
-        }
-    </script>
-    
-    <!--Google Maps API + places library important, for searchbar-->
-    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap" async defer></script>
-    <!-- For clustering the markers-->
+    <!-- Google Maps JS for map and journey planner search -->
+    <script src="/static/js/google-maps.js"></script>
+       <!-- For clustering the markers-->
     <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
@@ -134,6 +78,6 @@
 <!-- Include the weather data -->
     <!-- <script src="/static/js/addBikeStationMarkers.js"></script> -->
     <!-- <script src="/static/js/displayAggregateHistoricalData.js"></script> -->
-    <script src="/static/js/journey-planenr.js"></script>
+    <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
 </body>
 </html>
