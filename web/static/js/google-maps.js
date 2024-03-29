@@ -85,14 +85,8 @@ function closestThreeStations(location, htmlID) {
     .then((data) => {
       let distances = [];
       data.forEach((station) => {
-        let stationLatLng = new google.maps.LatLng(
-          station.position_lat,
-          station.position_lng
-        );
-        let distance = google.maps.geometry.spherical.computeDistanceBetween(
-          location,
-          stationLatLng
-        );
+        let distance = manhattanDistance(station.position_lat, station.position_long, location.lat(), location.lng());
+
         distances.push({ distance: distance, station: station });
       });
       distances.sort((a, b) => a.distance - b.distance);
