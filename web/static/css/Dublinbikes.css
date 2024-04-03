@@ -17,7 +17,6 @@ html, body {
 }
 
 /* For search bar */
-
 .map-search {
     position: absolute;
     width: 150px;
@@ -32,6 +31,10 @@ html, body {
     height: 100vh;
 }
 
+.flex-row:first-child {
+    height: 40px; 
+}
+
 .flex-row {
     display: flex;
     flex: 1; 
@@ -42,8 +45,64 @@ html, body {
     align-items: center;
     justify-content: center;
     flex: 1; 
-    border: 2px solid #000; 
+    border: .01px solid #000000; 
     box-sizing: border-box; 
+}
+
+#top-left {
+    font-size: 60px;
+    color: white;
+    background-color: #008cff; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-direction: row; 
+    background-image: linear-gradient(to left, #008cff, 80%, orange);
+}
+
+#bottom-right {
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+#top-left {
+    flex: 2;
+}
+
+/* This is for the witdh of the top right container */
+#top-right {
+    flex: .667; 
+    background-image: linear-gradient(to right, #008cff, orange);
+    justify-content: space-between;
+}
+
+/* This is for the height of the bottom two containers */
+.flex-row:last-child {
+    flex: 7; 
+}
+
+#weatherInfo {
+    color: white;
+}
+
+.logo-img {
+    height: 75px; 
+    width: auto;
+    max-width: 75px;
+    object-fit: contain;
+}
+
+.logo-and-text {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: nowrap;
 }
 
 /* For side info */
@@ -52,8 +111,8 @@ html, body {
     flex-direction: column; 
     align-items: center;
     width: 100%;
+    background-color: #e8eaed;
 }
-
 
 #side-info canvas {
     width: 90%;
@@ -61,24 +120,6 @@ html, body {
     /* height: 300px;  */
     /* height: 100%; */
     margin-bottom: 20px;
-}
-
-
-/* Comments below outlining the flex properties if either y'all want to play around */
-
-/* This is for the height of the top left container */
-#top-left {
-    flex: 2;
-}
-
-/* This is for the witdh of the top right container */
-#top-right {
-    flex: .667; 
-}
-
-/* This is for the height of the bottom two containers */
-.flex-row:last-child {
-    flex: 4; 
 }
 
 /* For map container */
@@ -95,9 +136,8 @@ html, body {
 
 #weatherImage {
     width: 60%;
-    height: 60%;
+    height: 100%;
 }
-
 
 #journey-planner-button {
     position:absolute;
@@ -116,19 +156,28 @@ html, body {
     align-items: center;
     justify-content: center;
     width: 100%;
+    padding: 8px;
 }
 
 #Legend {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: rgba(255,255,255,0.9);
+    background-color: rgba(255, 255, 255, 0);
     padding: 10px;
     border-radius: 5px;
     z-index: 100;
     display: flex;
     flex-direction: column;
     align-items: flex-start; 
+}
+
+.legend-content {
+    display: none;
+}
+
+.show-legend {
+    display: block;
 }
 
 .availability-item {
