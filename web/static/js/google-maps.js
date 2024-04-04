@@ -1,3 +1,6 @@
+let directionsService;
+let directionsRenderer;
+
 // Initialising the map + setting its parameters.
 function initMap() {
   let mapOptions = {
@@ -15,6 +18,10 @@ function initMap() {
     ],
   };
   let map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
 
   const input = document.getElementById("map-search-start");
   const autocomplete = new google.maps.places.Autocomplete(input);
@@ -34,7 +41,7 @@ function initMap() {
 
   autocomplete.addListener("place_changed", function () {
     const place = autocomplete.getPlace();
-    if (!place.geometry) {
+    if (!place.geometry) { 
       console.log("Autocomplete's returned place contains no geometry");
       return;
     }
@@ -45,9 +52,18 @@ function initMap() {
       map.setZoom(15);
     }
 
+    const markerStart = new google.maps.Marker({
+      position: place.geometry.location,
+      map: map,
+      title: "Start Location",
+      icon: 'https://maps.gstatic.com/mapfiles/ms2/micons/cycling.png'
+    });
+
     constPlaceStart = place.geometry.location;
     closestThreeStations(constPlaceStart, "checkboxes-start");
-
+    if (constPlaceFin) {
+      routeCalc(directionsService, directionsRenderer, constPlaceStart, constPlaceFin);
+    }
   });
 
   const inputFin = document.getElementById("map-search-fin");
@@ -60,15 +76,27 @@ function initMap() {
       console.log("Autocomplete's returned place contains no geometry");
       return;
     }
+
     if (placeFin.geometry.viewport) {
-      map.fitBounds(placeFin.geometry.viewport);
-    } else {
-      map.setCenter(placeFin.geometry.location);
-      map.setZoom(15);
-    }
+    map.fitBounds(placeFin.geometry.viewport);
+  } else {
+    map.setCenter(placeFin.geometry.location);
+    map.setZoom(15);
+  }
+
+    const marker = new google.maps.Marker({
+      position: placeFin.geometry.location,
+      map: map,
+      title: "Destination",
+      icon: 'http://maps.gstatic.com/mapfiles/ms2/micons/grn-pushpin.png'
+    });
 
     constPlaceFin = placeFin.geometry.location;
     closestThreeStations(constPlaceFin, "checkboxes-fin");
+    if (constPlaceStart) {
+      routeCalc(directionsService, directionsRenderer, constPlaceStart, constPlaceFin);
+    }
+
   });
 }
 
@@ -103,6 +131,23 @@ function closestThreeStations(location, htmlID) {
       });
     })
     .catch((error) => console.error("Error loading JSON data:", error));
+}
+
+function routeCalc(directionsService, directionsRenderer, start, end) {
+  directionsService.route(
+    {
+      origin: start,
+      destination: end,
+      travelMode: google.maps.TravelMode.BICYCLING,
+    },
+    (response, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        directionsRenderer.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    }
+  );
 }
 
 initMap();
