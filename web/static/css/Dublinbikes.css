@@ -164,6 +164,16 @@ html, body {
     max-width: 200px;
 }
 
+.timeSelection {
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+
 #Legend {
     position: absolute;
     top: 10px;
