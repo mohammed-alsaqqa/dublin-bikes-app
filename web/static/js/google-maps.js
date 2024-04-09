@@ -72,10 +72,8 @@ function initMap() {
   });
 }
 
-function manhattanDistance(lat1, lon1, lat2, lon2) {
-  let a = Math.abs(lat1 - lat2);
-  let b = Math.abs(lon1 - lon2);
-  return a + b;
+function linearDistance(lat1, lon1, lat2, lon2) {
+  return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lon2 - lon1, 2));
 }
 
 function closestThreeStations(location, htmlID) {
@@ -85,7 +83,7 @@ function closestThreeStations(location, htmlID) {
     .then((data) => {
       let distances = [];
       data.forEach((station) => {
-        let distance = manhattanDistance(station.position_lat, station.position_long, location.lat(), location.lng());
+        let distance = linearDistance(station.position_lat, station.position_long, location.lat(), location.lng());
 
         distances.push({ distance: distance, station: station });
       });
