@@ -8,26 +8,25 @@ function fetchWeatherData() {
             console.log(data)
             switch (data.Weather){
                 case "Clouds":
-                    weatherImage = "static/img/weatherImages/clouds.png"
+                    weatherImage = "https://openweathermap.org/img/wn/04d@2x.png"
                     break;
                 case "Rain":
-                    weatherImage = "static/img/weatherImages/rainy.gif"
+                    weatherImage = "https://openweathermap.org/img/wn/09d@2x.png"
                     break;
                 case "Clear":
-                    weatherImage = "static/img/weatherImages/icons8-summer.gif"
+                    weatherImage = "https://openweathermap.org/img/wn/01d@2x.png"
                     break;
                 case "Mist":
-                    weatherImage = "static/img/weatherImages/icons8-mist-96.png"
+                    weatherImage = "https://openweathermap.org/img/wn/50d@2x.png"
                     break;
                 case "Drizzle":
-                    weatherImage = "static/img/weatherImages/icons8-light-rain.gif"
+                    weatherImage = "https://openweathermap.org/img/wn/10d@2x.png"
                     break;
                 case "Snow":
-                    weatherImage = "static/img/weatherImages/icons8-snow.gif"
+                    weatherImage = "https://openweathermap.org/img/wn/13d@2x.png"
                     break;
                 default:
-                    weatherImage = "static/img/weatherImages/icons8-no-image-50.png"
-                    
+                    weatherImage = "https://openweathermap.org/img/wn/10d@2x.png"
             }
                 
             document.getElementById('weatherImage').src = weatherImage;
