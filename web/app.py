@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import mySQL_commands as mc
 import os
 import pickle
@@ -60,56 +60,49 @@ def hourly_averages():
     data = mc.getHourlyOverallAverages(conn)
     return jsonify(data)
 
-# @app.route("/predict/<int:station_id>")
-# def predict():
-#     f_name = f"model{station_id}.pkl"
-#     with open(f_name, "rb") as f:
-#         model = pickle.load(f)
-#     result = model.predict(X)
 
+@app.route('/plan_journey', methods=['POST'])
+def predict():
+    data = request.json
+    start_station_id = data['startStationId']
 
-@app.route("/predict/<int:station_id>/<date_time>")
-def predict(station_id, date_time):
+    start_datetime_unix = data['startDateTime']
+    fin_station_id = data['finStationId']
+    fin_datetime_unix = data['finDateTime']
+
     # Call the internal weather function to get the data
-    weather_data = mc.get_weather_forecast_data() 
-    
-    weather_data = find_closest_weather(weather_data, date_time)
-    # Extract features for prediction from the weather data
-    temperature = weather_data['temperature'] #already stored in degrees Celsius
-    humidity = weather_data['humidity']
-    wind_speed = weather_data['wind_speed']
-    # last_update = weather_data['last_update']
-    weather_condition = weather_data['weather_condition']
-    weather_condition_mapping = {'Clouds': 0, 'Unknown': 1, 'Rain': 2, 'Clear': 3, 'Mist': 4, 'Drizzle': 5, 'Snow': 6, 'Fog': 7}
+    weather_forecast_data = mc.get_weather_forecast_data() 
 
-    weather_condition_encoded = weather_condition_mapping[weather_condition]
+    weather_data_start = find_closest_weather(weather_forecast_data, start_datetime_unix)
+    weather_data_fin = find_closest_weather(weather_forecast_data, fin_datetime_unix)
 
-    # Convert to a datetime object using pandas (pd.to_datetime handles milliseconds directly)
-    last_update_datetime = pd.to_datetime(int(date_time), unit='s', utc=True)
-    # Extract dayofweek and hour
-    day_of_the_week = last_update_datetime.dayofweek  # Monday=0, Sunday=6
-    hour = last_update_datetime.hour
+    # Extract and process the start data
+    X_start = process_weather_data(weather_data_start, start_datetime_unix)
 
-    if day_of_the_week < 5:
-        is_weekend = 0
-    else:
-        is_weekend = 1
-
-
-    # Construct the features DataFrame 'X' for prediction
-    X = pd.DataFrame([[day_of_the_week, hour, weather_condition_encoded, is_weekend, temperature, humidity, wind_speed]],
-                    columns=['day_of_the_week', 'hour', 'weather_condition_encoded', 'is_weekend', 'temperature', 'humidity', 'wind_speed'])
+    # Extract and process the finish data
+    X_fin = process_weather_data(weather_data_fin, fin_datetime_unix)
 
     # Get the directory of the current script (app.py)
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
     # Construct the path to the model file
-    f_name = os.path.join(script_dir, "models", f"model{station_id}.pkl")
-    with open(f_name, "rb") as f:
-        model = pickle.load(f)
-    result = model.predict(X)
+    f_name_bikes = os.path.join(script_dir, "models", f"model{start_station_id}_bikes.pkl")
+    f_name_stands = os.path.join(script_dir, "models", f"model{fin_station_id}_stands.pkl")
 
-    return jsonify({'prediction': result[0]})
+    with open(f_name_bikes, "rb") as f1:
+        model_bikes = pickle.load(f1)
+    result_bikes = model_bikes.predict(X_start)
+
+    with open(f_name_stands, "rb") as f2:
+        model_stands = pickle.load(f2)
+    result_stands = model_stands.predict(X_fin)
+
+    return jsonify({
+    'start_station_id': start_station_id,
+    'predicted_available_bikes': result_bikes[0],
+    'finish_station_id': fin_station_id,
+    'predicted_available_stands': result_stands[0]
+})
 
 
 def find_closest_weather(data, target_datetime_str):
@@ -134,7 +127,27 @@ def find_closest_weather(data, target_datetime_str):
         # No sufficiently close datetime found
         return None
 
+def process_weather_data(weather_data, datetime_unix):
+    # Extract features from the weather data
+    temperature = weather_data['temperature']
+    humidity = weather_data['humidity']
+    wind_speed = weather_data['wind_speed']
+    weather_condition = weather_data['weather_condition']
+    weather_condition_mapping = {'Clouds': 0, 'Unknown': 1, 'Rain': 2, 'Clear': 3, 'Mist': 4, 'Drizzle': 5, 'Snow': 6, 'Fog': 7}
 
+    weather_condition_encoded = weather_condition_mapping.get(weather_condition, 1)  # default to 'Unknown' if not found
+
+    # Convert the Unix time to a datetime object
+    datetime_obj = pd.to_datetime(datetime_unix, unit='s', utc=True)
+
+    # Extract day of the week and hour
+    day_of_the_week = datetime_obj.dayofweek  # Monday=0, Sunday=6
+    hour = datetime_obj.hour
+    is_weekend = 1 if day_of_the_week >= 5 else 0
+
+    # Create and return the features DataFrame for prediction
+    return pd.DataFrame([[day_of_the_week, hour, weather_condition_encoded, is_weekend, temperature, humidity, wind_speed]],
+                        columns=['day_of_the_week', 'hour', 'weather_condition_encoded', 'is_weekend', 'temperature', 'humidity', 'wind_speed'])
 
 if __name__ == '__main__':
     app.run(debug=True)
