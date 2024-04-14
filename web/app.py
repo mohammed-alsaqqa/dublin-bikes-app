@@ -1,7 +1,9 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import mySQL_commands as mc
 import os
-
+import pickle
+import pandas as pd
+from datetime import datetime, timedelta
 app = Flask(__name__)
 
 
@@ -58,6 +60,94 @@ def hourly_averages():
     data = mc.getHourlyOverallAverages(conn)
     return jsonify(data)
 
+
+@app.route('/plan_journey', methods=['POST'])
+def predict():
+    data = request.json
+    start_station_id = data['startStationId']
+
+    start_datetime_unix = data['startDateTime']
+    fin_station_id = data['finStationId']
+    fin_datetime_unix = data['finDateTime']
+
+    # Call the internal weather function to get the data
+    weather_forecast_data = mc.get_weather_forecast_data() 
+
+    weather_data_start = find_closest_weather(weather_forecast_data, start_datetime_unix)
+    weather_data_fin = find_closest_weather(weather_forecast_data, fin_datetime_unix)
+
+    # Extract and process the start data
+    X_start = process_weather_data(weather_data_start, start_datetime_unix)
+
+    # Extract and process the finish data
+    X_fin = process_weather_data(weather_data_fin, fin_datetime_unix)
+
+    # Get the directory of the current script (app.py)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the path to the model file
+    f_name_bikes = os.path.join(script_dir, "models", f"model{start_station_id}_bikes.pkl")
+    f_name_stands = os.path.join(script_dir, "models", f"model{fin_station_id}_stands.pkl")
+
+    with open(f_name_bikes, "rb") as f1:
+        model_bikes = pickle.load(f1)
+    result_bikes = model_bikes.predict(X_start)
+
+    with open(f_name_stands, "rb") as f2:
+        model_stands = pickle.load(f2)
+    result_stands = model_stands.predict(X_fin)
+
+    return jsonify({
+    'start_station_id': start_station_id,
+    'predicted_available_bikes': result_bikes[0],
+    'finish_station_id': fin_station_id,
+    'predicted_available_stands': result_stands[0]
+})
+
+
+def find_closest_weather(data, target_datetime_str):
+    # Convert the target_datetime_str to a datetime object
+    target_datetime = datetime.strptime(str(datetime.utcfromtimestamp(int(target_datetime_str))), '%Y-%m-%d %H:%M:%S')
+
+    closest_datetime = None
+    min_time_diff = timedelta.max
+
+    for entry in data:
+        entry_datetime = datetime.strptime(entry['datetime'], '%Y-%m-%d %H:%M:%S')
+        time_diff = abs(entry_datetime - target_datetime)
+
+        if time_diff < min_time_diff:
+            closest_datetime = entry
+            min_time_diff = time_diff
+
+    if min_time_diff <= timedelta(hours=3):
+        # print(f"Closest weather data found for {target_datetime_str}: {closest_datetime}")
+        return closest_datetime
+    else:
+        # No sufficiently close datetime found
+        return None
+
+def process_weather_data(weather_data, datetime_unix):
+    # Extract features from the weather data
+    temperature = weather_data['temperature']
+    humidity = weather_data['humidity']
+    wind_speed = weather_data['wind_speed']
+    weather_condition = weather_data['weather_condition']
+    weather_condition_mapping = {'Clouds': 0, 'Unknown': 1, 'Rain': 2, 'Clear': 3, 'Mist': 4, 'Drizzle': 5, 'Snow': 6, 'Fog': 7}
+
+    weather_condition_encoded = weather_condition_mapping.get(weather_condition, 1)  # default to 'Unknown' if not found
+
+    # Convert the Unix time to a datetime object
+    datetime_obj = pd.to_datetime(datetime_unix, unit='s', utc=True)
+
+    # Extract day of the week and hour
+    day_of_the_week = datetime_obj.dayofweek  # Monday=0, Sunday=6
+    hour = datetime_obj.hour
+    is_weekend = 1 if day_of_the_week >= 5 else 0
+
+    # Create and return the features DataFrame for prediction
+    return pd.DataFrame([[day_of_the_week, hour, weather_condition_encoded, is_weekend, temperature, humidity, wind_speed]],
+                        columns=['day_of_the_week', 'hour', 'weather_condition_encoded', 'is_weekend', 'temperature', 'humidity', 'wind_speed'])
 
 if __name__ == '__main__':
     app.run(debug=True)
