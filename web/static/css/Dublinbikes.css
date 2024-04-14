@@ -164,6 +164,14 @@ html, body {
     max-width: 200px;
 }
 
+.journey-planner-img {
+    width: 100%; 
+    max-width: 100px; 
+    max-height: 100px;
+    display: block; 
+    margin: 10px auto; 
+}
+
 .timeSelection {
     top: 10px;
     left: 10px;
