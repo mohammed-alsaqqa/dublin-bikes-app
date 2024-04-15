@@ -219,6 +219,7 @@ function closestThreeStations(location, htmlID) {
                 radioButton.name = htmlID;
                 radioButton.value = item.station.station_name;
                 radioButton.setAttribute('data-station-id', item.station.station_id);
+                radioButton.setAttribute('data-station-name', item.station.station_name);
                 radioButton.addEventListener('change', () => setStationAsRoutePoint(item.station, htmlID));
                 div.appendChild(radioButton);
                 div.append(item.station.station_name);
