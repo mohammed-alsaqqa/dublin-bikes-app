@@ -77,6 +77,8 @@ def predict():
     weather_data_fin = find_closest_weather(weather_forecast_data, fin_datetime_unix)
 
     # Extract and process the start data
+    print("=====================================")
+    print(start_datetime_unix,fin_datetime_unix)
     X_start = process_weather_data(weather_data_start, start_datetime_unix)
 
     # Extract and process the finish data
@@ -103,6 +105,77 @@ def predict():
     'finish_station_id': fin_station_id,
     'predicted_available_stands': result_stands[0]
 })
+
+
+
+@app.route('/predict', methods=['POST'])
+def predict_single():
+    data = request.json
+    start_station_id = data['startStationId']
+    start_datetime_unix = data['startDateTime']
+    fin_station_id = data['finStationId']
+    fin_datetime_unix = data['finDateTime']
+
+    # Convert UNIX time to datetime objects
+    # start_datetime = pd.to_datetime(datetime.now(), utc=True).floor('H')
+    
+    start_datetime = pd.to_datetime(start_datetime_unix, unit='s', utc=True).floor('H')
+    print(start_datetime)
+    end_datetime = pd.to_datetime(fin_datetime_unix, unit='s', utc=True)
+    # end_datetime = start_datetime + pd.Timedelta(days=4)
+
+    # Generate hourly time range from start to end time
+    hours_to_predict = pd.date_range(start=start_datetime, end=end_datetime, freq='15T')
+
+    # Get the directory of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Path to the models
+    f_name_bikes = os.path.join(script_dir, "models", f"model{start_station_id}_bikes.pkl")
+    f_name_stands = os.path.join(script_dir, "models", f"model{fin_station_id}_stands.pkl")
+
+    # Load models
+    with open(f_name_bikes, "rb") as f1:
+        model_bikes = pickle.load(f1)
+    with open(f_name_stands, "rb") as f2:
+        model_stands = pickle.load(f2)
+    
+    available_bikes_predictions = []
+    available_stands_predictions = []
+    
+    weather_forecast_data = mc.get_weather_forecast_data()
+
+    for prediction_time in hours_to_predict:
+        # Find closest weather data
+        weather_data = find_closest_weather(weather_forecast_data, int(prediction_time.timestamp()))
+
+        # Process the weather data for model input
+        X = process_weather_data(weather_data, int(prediction_time.timestamp()))
+
+        # Predict bikes and stands
+        predicted_bikes = model_bikes.predict(X)[0]
+        predicted_stands = model_stands.predict(X)[0]
+        
+        available_bikes_predictions.append({
+            'datetime': prediction_time.isoformat(),
+            'predicted_available_bikes': predicted_bikes
+        })
+
+        available_stands_predictions.append({
+            'datetime': prediction_time.isoformat(),
+            'predicted_available_stands': predicted_stands
+        })
+
+    # Construct a response with both lists
+    response = {
+        'available_bikes_predictions': available_bikes_predictions,
+        'available_stands_predictions': available_stands_predictions
+    }
+
+    return jsonify(response)
+
+
+
 
 
 def find_closest_weather(data, target_datetime_str):
@@ -148,6 +221,12 @@ def process_weather_data(weather_data, datetime_unix):
     # Create and return the features DataFrame for prediction
     return pd.DataFrame([[day_of_the_week, hour, weather_condition_encoded, is_weekend, temperature, humidity, wind_speed]],
                         columns=['day_of_the_week', 'hour', 'weather_condition_encoded', 'is_weekend', 'temperature', 'humidity', 'wind_speed'])
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
