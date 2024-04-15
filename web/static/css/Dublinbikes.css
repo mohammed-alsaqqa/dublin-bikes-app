@@ -19,7 +19,7 @@ html, body {
 /* For search bar */
 .map-search {
     position: absolute;
-    width: 150px;
+    width: 120px;
     height: 20px;
     font-size: 16px;
     margin: auto;
@@ -158,10 +158,10 @@ html, body {
     justify-content: center;
     padding: 8px;
     background-color: #e8eaed;
-    flex-basis: 200px;
+    flex-basis: 220px;
     flex-grow: 0;
     flex-shrink: 1;
-    max-width: 200px;
+    max-width: 220px;
 }
 
 .journey-planner-img {

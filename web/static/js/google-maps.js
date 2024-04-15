@@ -206,13 +206,14 @@ function closestThreeStations(location, htmlID) {
                 let distance = linearDistance(station.position_lat, station.position_long, location.lat(), location.lng());
                 distances.push({ distance: distance, station: station });
             });
-            distances.sort((a, b) => a.distance - b.distance);
+            distances.sort((a, b) => a.distance - b.distance); 
             let closestStations = distances.slice(0, 3);
 
             let checkboxes = document.getElementById(htmlID);
             checkboxes.innerHTML = "";
             closestStations.forEach(item => {
                 let div = document.createElement("div");
+                // div.innerHTML = `<input type="radio" name="${htmlID}" value="${item.station.station_name}" data-station-id="${item.station.station_id}">${item.station.station_name}`;
                 let radioButton = document.createElement("input");
                 radioButton.type = "radio";
                 radioButton.name = htmlID;
