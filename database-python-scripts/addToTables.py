@@ -54,12 +54,12 @@ table_name_weather = "weather_data"
 
 # Define the SQL statement to insert data into the table for both weather and bikes
 insert_query = f"""
-INSERT INTO {table_name} (number, last_update, available_bikes, available_bike_stands, status)
+INSERT INTO {table_name} (station_id, last_update, available_bikes, available_bike_stands, status)
 VALUES (%s, %s, %s, %s, %s);
 """
 
 insert_query_weather = f'''
-INSERT INTO {table_name_weather} (number, temperature, humidity, weather_condition, wind_speed, last_update)
+INSERT INTO {table_name_weather} (station_id, temperature, humidity, weather_condition, wind_speed, last_update)
 VALUES (%s, %s, %s, %s, %s, %s);
 '''
 

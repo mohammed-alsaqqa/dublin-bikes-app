@@ -1,8 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    font-family: 'Roboto', sans-serif;
+
 }    
+
 
 #search {
     position: absolute;
@@ -46,7 +52,7 @@ html, body {
     align-items: center;
     justify-content: center;
     flex: 1; 
-    border: .01px solid #00000024; 
+    /* border: .01px solid #00000024;  */
     box-sizing: border-box; 
 }
 

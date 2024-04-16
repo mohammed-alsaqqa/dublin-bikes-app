@@ -117,14 +117,11 @@ def predict_single():
     fin_datetime_unix = data['finDateTime']
 
     # Convert UNIX time to datetime objects
-    # start_datetime = pd.to_datetime(datetime.now(), utc=True).floor('H')
-    
     start_datetime = pd.to_datetime(start_datetime_unix, unit='s', utc=True).floor('H')
     print(start_datetime)
     end_datetime = pd.to_datetime(fin_datetime_unix, unit='s', utc=True)
-    # end_datetime = start_datetime + pd.Timedelta(days=4)
 
-    # Generate hourly time range from start to end time
+    # Generate time range from start to end time with 15 mins increment.
     hours_to_predict = pd.date_range(start=start_datetime, end=end_datetime, freq='15T')
 
     # Get the directory of the current script
@@ -221,11 +218,6 @@ def process_weather_data(weather_data, datetime_unix):
     # Create and return the features DataFrame for prediction
     return pd.DataFrame([[day_of_the_week, hour, weather_condition_encoded, is_weekend, temperature, humidity, wind_speed]],
                         columns=['day_of_the_week', 'hour', 'weather_condition_encoded', 'is_weekend', 'temperature', 'humidity', 'wind_speed'])
-
-
-
-
-
 
 
 if __name__ == '__main__':

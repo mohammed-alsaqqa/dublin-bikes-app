@@ -340,7 +340,7 @@ def get_weather_forecast_data(cache_file='weather_cache.json'):
             cache = json.load(f)
         last_update = datetime.strptime(cache['last_update'], '%Y-%m-%d %H:%M:%S')
         # Check if the cache is still within the forecast period (4 days from last update)
-        if datetime.now() - last_update < timedelta(days=4):
+        if datetime.now() - last_update < timedelta(days=1):
             return cache['data']
         else:
             raise FileNotFoundError  # Cache expired, fetch new data

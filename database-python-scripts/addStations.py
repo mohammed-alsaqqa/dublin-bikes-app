@@ -43,7 +43,7 @@ table_name = "station"
 
 # Define the SQL statement to insert data into the table
 insert_query = f"""
-INSERT INTO {table_name} (number, address, banking, bike_stands, name, position_lat, position_lng)
+INSERT INTO {table_name} (station_id, address, banking, bike_stands, name, position_lat, position_lng)
 VALUES (%s, %s, %s, %s, %s, %s, %s);
 """
 try:
