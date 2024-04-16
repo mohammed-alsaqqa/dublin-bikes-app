@@ -3,10 +3,11 @@ from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime, timedelta
 from flask import g
-
+import requests
+import json
 load_dotenv(".env")
 PASSWORD = getenv("PASSWORD")
-
+WEATHER_API_KEY = getenv("OPEN_WEATHER_API")
 def createConnection():
     """
     This function creates a connection to the database
@@ -319,6 +320,51 @@ def getHourlyOverallAverages(conn):
     except Exception as ee:
         print(ee)
         return []  # Return an empty list in case of an error
+
+
+
+def fetch_weather_forecast():
+    """Fetches weather forecast data from the OpenWeatherMap API."""
+    response = requests.get(f"http://api.openweathermap.org/data/2.5/forecast?q=Dublin&appid={WEATHER_API_KEY}")
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+
+def get_weather_forecast_data(cache_file='weather_cache.json'):
+    """Gets weather data, using cached data if valid, otherwise fetches from API."""
+    try:
+        # Try to load cached data
+        with open(cache_file, 'r') as f:
+            cache = json.load(f)
+        last_update = datetime.strptime(cache['last_update'], '%Y-%m-%d %H:%M:%S')
+        # Check if the cache is still within the forecast period (4 days from last update)
+        if datetime.now() - last_update < timedelta(days=1):
+            return cache['data']
+        else:
+            raise FileNotFoundError  # Cache expired, fetch new data
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Fetch new data if cache is missing, unreadable, or expired
+        data = fetch_weather_forecast()
+        if data:
+            simplified_data = []
+            for forecast in data['list']:
+                simplified_data.append({
+                    'datetime': forecast['dt_txt'],
+                    'temperature': forecast['main']['temp'] - 273.15, #store value in degrees Celsius
+                    'weather_condition': forecast['weather'][0]['main'],
+                    'humidity': forecast['main']['humidity'],
+                    'wind_speed': forecast['wind']['speed']
+                })
+            with open(cache_file, 'w') as f:
+                json.dump({
+                    'last_update': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'data': simplified_data
+                }, f)
+            return simplified_data  
+        else:
+            return None
 
 from flask import Flask
 app = Flask(__name__)

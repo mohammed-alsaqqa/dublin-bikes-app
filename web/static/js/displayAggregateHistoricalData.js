@@ -52,7 +52,7 @@ function addBikeStationMarkers(map, stations) {
                     }
                 });
                 // Render the aggregate charts again
-                fetchAggregateDataAndRenderCharts(); // Make sure this function is defined
+                fetchAggregateDataAndRenderCharts();
             });
         });
     });
