@@ -279,7 +279,7 @@ function getClosestStations(userPosition, stations) {
     // Sort stations by distance
     stations.sort((a, b) => a.distance - b.distance);
 
-    // Return the 10 closest stations
+    // Return the 5 closest stations
     return stations.slice(0, 5);
 }
     
