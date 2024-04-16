@@ -20,7 +20,6 @@ function checkInputs() {
     const dateFin = document.getElementById('dateFin').value;
     const locationFin = document.getElementById('map-search-fin').value;
 
-    // Assuming you have a way to check if a station is selected
     const startStationSelected = getSelectedStationId('checkboxes-start');
     const finStationSelected = getSelectedStationId('checkboxes-fin');
     const allFieldsFilled = timeStart && dateStart && locationStart && startStationSelected &&
@@ -107,12 +106,8 @@ function planJourney() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data);        
-        // let resultsDiv = document.getElementById('prediction-results');
-        // createChart('predicted-hourly-bikes', 'Predicted Available Bikes', data.available_bikes_predictions.datetime, data.available_bikes_predictions.predicted_available_bikes, 'Time');
         document.getElementById('side-info').innerHTML = '';
 
-        // Assuming 'data' is the JSON object you receive
         const bikePredictions = data.available_bikes_predictions;
         const standPredictions = data.available_stands_predictions;
 
@@ -126,8 +121,6 @@ function planJourney() {
         // Create the bikes chart
         createChart('predicted-hourly-bikes', "Predicted Number of Available Bikes in The Start Station", bikeTimeLabels,bikePredictionValues, 'Time');
         createChart('predicted-hourly-stands', "Predicted Number of Available Bike Stands in The Destination Station", standTimeLabels,standPredictionValues, 'Time');
-        // If you have a similar canvas element for stands, create the stands chart
-        // createChart('predicted-hourly-stands', standTimeLabels, standPredictionValues, 'Predicted Available Stands', '#36A2EB');
 
         }
 
@@ -139,7 +132,7 @@ function planJourney() {
 }
 
 
-// Add the event listener for the plan journey button
+// event listener for the plan journey button
 document.getElementById('planJourneyButton').addEventListener('click', function() {
     planJourney();
 });
