@@ -28,17 +28,21 @@
             <div class="flex-item" id="journey-planner-div">
                 <div id="journey-form-div">
                     <h2>Journey Planner</h2>
+                    <img src="/static/img/titleImages/JourneyPlanner.png" alt="Journey Planner" class="journey-planner-img">
                     <!-- Start Time Selection -->
                     <div class="timeSelection">
+                        <label for="dateStart">Start Date:</label>
+                        <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+
                         <select id="timeDropdownStart">
                             <script src="/static/js/timeOptions.js"></script>
                         </select>
                     </div>
                 
                     <!-- Start Date Selection -->
-                    <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+                    <!-- <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> Update min and max with JS -->
                 
-                    <input id="map-search-start" class="map-search" type="text" placeholder="Search location">
+                    <input id="map-search-start" class="map-search" type="text" placeholder="Search Start location">
                     <br><br>
                     <div id="checkboxes-start">
                         <!-- Dynamically generated checkboxes for start station -->
@@ -46,15 +50,17 @@
                 
                     <!-- Destination Time Selection -->
                     <div class="timeSelection">
+                        <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+
                         <select id="timeDropdownFin">
                             <!-- Time options will be filled by timeOptions.js -->
                         </select>
                     </div>
                 
                     <!-- Destination Date Selection -->
-                    <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+                    <!-- <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> Update min and max with JS -->
                 
-                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search location">
+                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search Destination location">
                     <br><br>
                     <div id="checkboxes-fin">
                         <!-- Dynamically generated checkboxes for destination station -->
@@ -62,38 +68,14 @@
                 
                     <!-- Plan Button -->
                     <button id="planJourneyButton" type="button" disabled>Plan Journey</button>
+                    <div id="prediction-results"></div>
                 </div>
-                <!-- <div id="journey-form-div">
-                    <h2>Journey Planner</h2>
-                    <div class="timeSelection">
-                        <select id="timeDropdownStart">
-                            <script src="/static/js/timeOptions.js"></script>
-
-                        </select>
-                    </div>
-                    <input id="map-search-start" class="map-search" type="text" placeholder="Search location">
-                    <br><br>
-                    <div id="checkboxes-start">
-
-                    </div>
-                    <br><br>
-                    <div class="timeSelection">
-                        <select id="timeDropdownFin">
-                        </select>
-                    </div>
-                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search location">
-                    <br><br>
-                    <div id="checkboxes-fin">
-
-                    </div>
-
-                    
-                </div> -->
             </div>
             <div class="flex-item" id="map-container">
                 <button onclick="showhide(); updateDateInputs();" id="journey-planner-button">Journey Planner</button>
                 
                 <div id="map">Map Here</div>
+                <button id="toggle-legend">Legend</button>
                 <div id="Legend">
                     <div class="availability-item">
                         <img src="/static/img/bikeImages/Red-Bike.png" alt="Low Availability" class="bike-availability-img">
@@ -132,6 +114,7 @@
 <!-- Include the weather data -->
     <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
     <script src="/static/js/planner-form.js"></script>
+    <script src="/static/js/legendToggle.js"></script>
 
     
 </body>
