@@ -13,13 +13,21 @@ def createConnection():
     This function creates a connection to the database
     """
     # Connect to the database 
+    # if 'conn' not in g:
+    #     g.conn = mysql.connector.connect(
+    #     host='localhost',
+    #     user='root',
+    #     password=PASSWORD,
+    #     database="dublinbikes"
+    #     )
+
     if 'conn' not in g:
         g.conn = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password=PASSWORD,
-        database="dublinbikes"
-        )
+        host=getenv("DATABASE_HOST_NAME"),
+        user=getenv("DATABASE_USER"),
+        password=getenv("DATABASE_PASSWORD"),
+        database=getenv("DATABASE_NAME")
+    )
     return g.conn
 
 
