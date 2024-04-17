@@ -180,6 +180,13 @@ button:disabled {
     height: 100%;
 }
 
+#header{
+    height: 15vh;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
 
 #journey-form-div{
     height: auto;
