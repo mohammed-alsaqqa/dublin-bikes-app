@@ -114,6 +114,7 @@ button:disabled {
     background-color: rgba(10, 49, 97, 0.8);
 
     justify-content: space-between;
+    display: flex;
 }
 
 
@@ -126,7 +127,9 @@ button:disabled {
 }
 
 #weatherInfo {
+    flex: 2;
     color: white;
+    text-align: center;
 }
 
 .logo-img {
@@ -178,6 +181,7 @@ button:disabled {
 #weatherImage {
     width: 60%;
     height: 100%;
+    flex: 1;
 }
 
 #header{
