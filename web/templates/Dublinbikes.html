@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     
     <title>Dublin Bikes</title>
@@ -7,7 +7,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
 
     <!--Google Maps API + places library important, for searchbar-->
-    <script aync src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
 
 </head>
 <body>
@@ -20,7 +20,7 @@
                 <img src="/static/img/titleImages/HIH.png" alt="Dublin Bikes" class="logo-img">
             </div>
             <div class="flex-item" id="top-right">
-                <img id="weatherImage"></img>
+                <img src="" alt="Weather Logo" id="weatherImage"></img>
                 <p id="weatherInfo"></p>
             </div>
         </div>
@@ -108,7 +108,8 @@
                     </div>
                 </div>
             </div>
-            <div id="side-info" class="flex-item" id="bottom-right"><div id="loading-message">Getting the closest stations to your current location...</div>
+            <div id="side-info" class="flex-item" id="bottom-right">
+                <div id="loading-message">Getting the closest stations to your current location...</div>
         </div>
         </div>
     </div>
@@ -129,7 +130,7 @@
 <!-- Include Chart.js adapter for Moment.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
 <!-- Include the weather data -->
-    <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
+    <script src="/static/js/journey-planner.js"></script>
     <script src="/static/js/planner-form.js"></script>
     <script src="/static/js/legendToggle.js"></script>
 
