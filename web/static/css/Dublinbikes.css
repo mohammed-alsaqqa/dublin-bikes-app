@@ -329,22 +329,18 @@ button:disabled {
 /* For smaller screen sizes */
 @media (max-width: 800px) {
     .flex-row {
-        flex-direction: column; 
-        margin-bottom: 25px;
-        overflow: auto; /* Adjust or change to 'auto' if content needs to scroll */
-
+        flex-direction: column;
+        margin-bottom: 10px; /* Reduced margin for tighter layout */
     }
 
-    .flex-item{
-        width: 100%;
-        padding: 10px;
-        flex: 0 0 100%; /* Forces items to take full width individually and not overlap */
-        flex-grow: 0; /* Prevents flex items from growing */
-        flex-shrink: 0; /* Prevents flex items from shrinking */
-        flex-basis: auto; /* Takes up only as much space as its content */
+    .flex-item {
+        width: 100%; /* Full width for better use of space */
+        padding: 5px; /* Reduced padding */
     }
+
     #top-left, #top-right {
-        min-height: 100px; /* Adjust based on content */
+        min-height: auto; /* Allow height to adjust based on content */
+        padding: 10px; /* Ensures padding doesn't cause overflow */
     }
 
     img {
@@ -353,47 +349,52 @@ button:disabled {
     }
 
     body {
-        font-size: 14px;
+        font-size: 14px; /* Smaller font size for more space */
     }
+
     h2 {
-        font-size: 20px;
+        font-size: 18px; /* Smaller heading for less space consumption */
     }
 
     input[type="text"], input[type="date"], select {
-        font-size: 16px;
-        padding: 10px;
-        width: 100%;
+        font-size: 16px; /* Larger font size for better readability */
+        padding: 12px; /* Larger padding for easier interaction */
+        width: 100%; /* Full width to utilize space */
     }
 
     .availability-item img {
-        width: 50px; /* Smaller icons for mobile */
+        width: 40px; /* Adjusted size for better fit */
     }
 
-    .legend, .availability-item span {
-        font-size: 12px;
+    .availability-item span {
+        font-size: 12px; /* Smaller text to fit space */
     }
 
+    .map-search {
+        width: 100%; /* Full width */
+    }
+
+    #search {
+        width: 100%; /* Full width to avoid overflow */
+        margin-left: 0; /* Center alignment */
+    }
+
+    #journey-planner-div, #side-info {
+        display: block; /* Ensure visibility */
+        width: 100%; /* Full width */
+    }
 
     .bike-availability-img {
-        width: 20px;
-        height: 25px; 
+        width: 30px; /* Smaller image for space efficiency */
+        height: 35px;
     }
 
-    .map-search, #search {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-        left: 0;
-        right: 0; 
+    #toggle-legend, #Legend {
+        display: none; /* Hide complex UI elements that clutter small screens */
     }
 
-
-    #side-info {
-        display: none; /* Hide side info on small devices */
-    }
-
-    .availability-item, .map-search, #search {
-        min-height: 50px;
-        padding: 10px;
+    #planJourneyButton {
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 }
