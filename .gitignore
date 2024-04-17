@@ -7,3 +7,4 @@
 /web/__pycache__/
 
 .DS_Store
+web/dublin-bikes-app/*
