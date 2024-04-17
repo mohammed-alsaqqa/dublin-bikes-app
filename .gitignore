@@ -8,3 +8,6 @@
 
 .DS_Store
 web/dublin-bikes-app/*
+
+
+.ipynb_checkpoints/
