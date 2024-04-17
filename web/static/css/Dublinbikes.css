@@ -328,27 +328,13 @@ button:disabled {
 
 /* For smaller screen sizes */
 @media (max-width: 800px) {
-    .flexb{
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
+    #top-left{
+	font-size:20px;
+	padding: 10px; /* Ensures padding doesn't cause overflow */
     }
 
-    .flex-row {
-        flex-direction: column;
-        margin-bottom: 10px; /* Reduced margin for tighter layout */
-    }
-
-    .flex-item {
-        flex: 1 1 auto;
-        width: 100%; /* Full width for better use of space */
-        box-sizing: border-box;
-        padding: 5px; /* Reduced padding */
-    }
-
-    #top-left, #top-right {
-        min-height: auto; /* Allow height to adjust based on content */
-        padding: 10px; /* Ensures padding doesn't cause overflow */
+    #top-right{
+	display:none;
     }
 
     img {
@@ -387,18 +373,13 @@ button:disabled {
         margin-left: 0; /* Center alignment */
     }
 
-    #journey-planner-div, #side-info {
-        display: block; /* Ensure visibility */
-        width: 100%; /* Full width */
+    #side-info {
+        display: none;
     }
 
     .bike-availability-img {
         width: 30px; /* Smaller image for space efficiency */
         height: 35px;
-    }
-
-    #toggle-legend, #Legend {
-        display: none; /* Hide complex UI elements that clutter small screens */
     }
 
     #planJourneyButton {
