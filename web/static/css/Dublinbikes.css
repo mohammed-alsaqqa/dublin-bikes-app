@@ -328,8 +328,38 @@ button:disabled {
 
 /* For smaller screen sizes */
 @media (max-width: 800px) {
-    flex-row {
+    .flex-row {
         flex-direction: column; 
+    }
+
+    .flex-item{
+        width: 100%;
+        padding: 10px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    body {
+        font-size: 14px;
+    }
+    h2 {
+        font-size: 20px;
+    }
+
+    button, input[type="text"], input[type="date"], select {
+        font-size: 16px;
+        padding: 10px;
+        width: 100%;
+    }
+
+    .availability-item img {
+        width: 50px; /* Smaller icons for mobile */
+    }
+    .legend, .availability-item span {
+        font-size: 12px;
     }
 
     #map-container, #side-info {
@@ -350,8 +380,9 @@ button:disabled {
         right: 0; 
     }
 
-    body {
-        font-size: 15px; 
+
+    #side-info {
+        display: none; /* Hide side info on small devices */
     }
 
     .availability-item, .map-search, #search {
