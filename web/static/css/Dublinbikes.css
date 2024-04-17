@@ -265,6 +265,15 @@ button:disabled {
     padding-right: 6%;
 }
 
+#prediction-results p{
+    font-size: 0.9rem;
+    padding: 6%;
+    margin: 0;
+    text-align: center;
+
+}
+
+
 .timeSelection {
     height: 100%;
     width: 90%;

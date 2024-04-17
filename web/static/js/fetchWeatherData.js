@@ -30,9 +30,9 @@ function fetchWeatherData() {
             }
                 
             document.getElementById('weatherImage').src = weatherImage;
-            document.getElementById('weatherInfo').innerHTML = "Temperature: "+ data.temperature;
-            document.getElementById('weatherInfo').innerHTML += "<br>Wind Speed: " + data.wind_speed;
-            document.getElementById('weatherInfo').innerHTML += "<br>Humidity: " +data.Humidity;
+            document.getElementById('weatherInfo').innerHTML = "Temperature: "+ data.temperature+" °C";
+            document.getElementById('weatherInfo').innerHTML += "<br>Wind Speed: " + data.wind_speed+" m/s";
+            document.getElementById('weatherInfo').innerHTML += "<br>Humidity: " +data.Humidity+"%";
             
             
         })
