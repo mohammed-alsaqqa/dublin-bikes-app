@@ -4,8 +4,9 @@ import os
 import pickle
 import pandas as pd
 from datetime import datetime, timedelta
-app = Flask(__name__)
+from dotenv import load_dotenv
 
+app = Flask(__name__)
 
 @app.teardown_appcontext
 def close_db(e=None):
@@ -14,7 +15,9 @@ def close_db(e=None):
 @app.route('/')
 def index():
     # Renders index.html from the 'templates' folder
-    api_key = os.getenv('GMAP_API_KEY')
+    dotenv_path = "/home/ubuntu/project/.env"
+    load_dotenv(dotenv_path)
+    api_key = os.getenv('GOOGLE_MAPS_API')
     return render_template('Dublinbikes.html',GMAP_API_KEY=api_key)
 
 
@@ -44,7 +47,6 @@ def station_history(station_id):
 def weather():
     conn = mc.createConnection()
     data = mc.getWeatherData(conn)
-    print(123,data)
     return jsonify(data)
 
 @app.route('/daily-overall-averages')
@@ -77,8 +79,6 @@ def predict():
     weather_data_fin = find_closest_weather(weather_forecast_data, fin_datetime_unix)
 
     # Extract and process the start data
-    print("=====================================")
-    print(start_datetime_unix,fin_datetime_unix)
     X_start = process_weather_data(weather_data_start, start_datetime_unix)
 
     # Extract and process the finish data
@@ -118,7 +118,6 @@ def predict_single():
 
     # Convert UNIX time to datetime objects
     start_datetime = pd.to_datetime(start_datetime_unix, unit='s', utc=True).floor('H')
-    print(start_datetime)
     end_datetime = pd.to_datetime(fin_datetime_unix, unit='s', utc=True)
 
     # Generate time range from start to end time with 15 mins increment.
@@ -221,5 +220,5 @@ def process_weather_data(weather_data, datetime_unix):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
 
