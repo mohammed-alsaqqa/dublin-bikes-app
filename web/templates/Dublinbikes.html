@@ -18,7 +18,7 @@
             <div class="flex-item logo-and-text" id="top-left">
                 <span class="logo-text">Dublin Bikes</span>
                 <img src="/static/img/titleImages/HIH.png" alt="Dublin Bikes" class="logo-img">
-                </div>
+            </div>
             <div class="flex-item" id="top-right">
                 <img id="weatherImage"></img>
                 <p id="weatherInfo"></p>
@@ -31,36 +31,57 @@
                     <img src="/static/img/titleImages/JourneyPlanner.png" alt="Journey Planner" class="journey-planner-img">
                     <!-- Start Time Selection -->
                     <div class="timeSelection">
-                        <label for="dateStart">Start Date:</label>
-                        <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+                        <label for="dateStart">Select Journey Start Time</label>
+                        <div class="date-time">
+                            <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
 
-                        <select id="timeDropdownStart">
-                            <script src="/static/js/timeOptions.js"></script>
-                        </select>
+                            <select id="timeDropdownStart">
+                                <script src="/static/js/timeOptions.js"></script>
+                            </select>
+                        </div>
+                        <div class="info">Input a Location to Display The Closest 3 Stations:</div>
+                        <input id="map-search-start" class="map-search" type="text" placeholder="Search Start Location">
+                        
+                        <div id="checkboxes-start">
+                            
+                            <!-- Dynamically generated checkboxes for start station -->
+                        </div>
+
                     </div>
-                
+                    
+
+
+                    <div class="timeSelection">
+                        <label for="dateFin">Select Journey End Time</label>
+                        <div class="date-time">
+                            <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+
+                            <select id="timeDropdownFin"></select>
+                        </div>
+                        <!-- <div class="info">Input a Location to Display The Closest Three Stations:</div> -->
+                        <div class="info">Input a Location to Display The Closest 3 Stations:</div>
+
+                        <input id="map-search-fin" class="map-search" type="text" placeholder="Search End Location">
+                        
+                        <div id="checkboxes-fin">
+                            
+                            <!-- Dynamically generated checkboxes for start station -->
+                        </div>
+
+                    </div>    
+
+
+
+
                     <!-- Start Date Selection -->
                 
-                    <input id="map-search-start" class="map-search" type="text" placeholder="Search Start location">
-                    <br><br>
-                    <div id="checkboxes-start">
+                    <!-- <input id="map-search-start" class="map-search" type="text" placeholder="Search Start location"> -->
+                    <!-- <br><br> -->
+                    <!-- <div id="checkboxes-start"> -->
                         <!-- Dynamically generated checkboxes for start station -->
-                    </div>
+                    <!-- </div> -->
                 
-                    <!-- Destination Time Selection -->
-                    <div class="timeSelection">
-                        <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
 
-                        <select id="timeDropdownFin">
-                            <!-- Time options will be filled by timeOptions.js -->
-                        </select>
-                    </div>
-                                
-                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search Destination location">
-                    <br><br>
-                    <div id="checkboxes-fin">
-                        <!-- Dynamically generated checkboxes for destination station -->
-                    </div>
                 
                     <!-- Plan Button -->
                     <button id="planJourneyButton" type="button" disabled>Plan Journey</button>
