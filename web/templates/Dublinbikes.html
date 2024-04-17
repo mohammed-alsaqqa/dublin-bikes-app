@@ -115,6 +115,10 @@
     </div>
 
 
+    <!-- Google Maps JS for map and journey planner search -->
+    <script src="/static/js/google-maps.js"></script>
+       <!-- For clustering the markers-->
+    <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script>
         navigator.geolocation.getCurrentPosition = (fn) => {
   setTimeout(() => {
@@ -124,8 +128,8 @@
         altitude: null,
         altitudeAccuracy: null,
         heading: null,
-        latitude: 13.705848,
-        longitude: 100.622798,
+        latitude: 6.2603,
+        longitude: 53.3498,
         speed: null,
       },
       timestamp: Date.now(),
@@ -133,10 +137,6 @@
   }, 2912)
 }
     </script>
-    <!-- Google Maps JS for map and journey planner search -->
-    <script src="/static/js/google-maps.js"></script>
-       <!-- For clustering the markers-->
-    <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
