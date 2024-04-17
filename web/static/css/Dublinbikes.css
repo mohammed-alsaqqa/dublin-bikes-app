@@ -331,7 +331,7 @@ button:disabled {
     .flex-row {
         flex-direction: column; 
         margin-bottom: 25px;
-        overflow: hidden; /* Adjust or change to 'auto' if content needs to scroll */
+        overflow: auto; /* Adjust or change to 'auto' if content needs to scroll */
 
     }
 
@@ -373,15 +373,6 @@ button:disabled {
         font-size: 12px;
     }
 
-    #map-container {
-        position: relative; /* Adjust if needed */
-        z-index: 1; /* Higher index, the more on top it will be */
-    }
-
-    #map-container, #side-info {
-        flex: none;
-        height: 300px; 
-    }
 
     .bike-availability-img {
         width: 20px;
