@@ -3,23 +3,62 @@ function updateDateInputs() {
     const maxDate = new Date();
     maxDate.setDate(today.getDate() + 4);
 
-    const formatDate = (date) => date.toISOString().split('T')[0];
-
     document.getElementById('dateStart').min = formatDate(today);
     document.getElementById('dateStart').max = formatDate(maxDate);
     document.getElementById('dateFin').min = formatDate(today);
     document.getElementById('dateFin').max = formatDate(maxDate);
 }
 
+// Event listener to update the end date when the start date changes (to ensure dates are in order)
+document.getElementById('dateStart').addEventListener('change', function() {
+    console.log('Date start changed');
+
+    const startDate = new Date(this.value);
+    const endDateInput = document.getElementById('dateFin');
+    
+    const formattedStartDate = formatDate(startDate);
+    endDateInput.min = formattedStartDate; // Set the min attribute to the selected start date
+    
+    // If the current end date is before the new start date, update it to match
+    if (new Date(endDateInput.value) < startDate) {
+        endDateInput.value = formattedStartDate;
+    }
+    
+});
+
+
+
+// Event listener to update the start date when the end date changes (to ensure dates are in order)
+document.getElementById('dateFin').addEventListener('change', function() {
+    const endDate = new Date(this.value);
+    const startDateInput = document.getElementById('dateStart');
+    
+    const formattedEndDate = formatDate(endDate);
+    
+    // If the current start date is after the new end date, update it to match
+    if (new Date(startDateInput.value) > endDate) {
+        startDateInput.value = formattedEndDate;
+    }
+    
+    startDateInput.max = formattedEndDate;
+});
+
+
+function formatDate(date) {
+    return date.toISOString().split('T')[0];
+}
+
+
 // Function to check if all inputs are filled
 function checkInputs() {
+
     const timeStart = document.getElementById('timeDropdownStart').value;
     const dateStart = document.getElementById('dateStart').value;
     const locationStart = document.getElementById('map-search-start').value;
     const timeFin = document.getElementById('timeDropdownFin').value;
     const dateFin = document.getElementById('dateFin').value;
     const locationFin = document.getElementById('map-search-fin').value;
-
+    
     const startStationSelected = getSelectedStationId('checkboxes-start');
     const finStationSelected = getSelectedStationId('checkboxes-fin');
     const allFieldsFilled = timeStart && dateStart && locationStart && startStationSelected &&
@@ -27,6 +66,7 @@ function checkInputs() {
 
     document.getElementById('planJourneyButton').disabled = !allFieldsFilled;
 }
+
 
 
 // Function to get the selected station ID from the given radio button group
@@ -111,11 +151,28 @@ function planJourney() {
         const bikePredictions = data.available_bikes_predictions;
         const standPredictions = data.available_stands_predictions;
 
-        // Extracting datetimes and prediction values for bikes
-        const bikeTimeLabels = bikePredictions.map(prediction => new Date(prediction.datetime).toLocaleTimeString());
+        // Extracting datetimes and prediction values for bikes        
+        const bikeTimeLabels = bikePredictions.map(prediction => 
+            new Date(prediction.datetime).toLocaleString('en-US', {
+                weekday: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            })
+        );
+        
+        
         const bikePredictionValues = bikePredictions.map(prediction => prediction.predicted_available_bikes);
-        // Extracting datetimes and prediction values for stands
-        const standTimeLabels = standPredictions.map(prediction => new Date(prediction.datetime).toLocaleTimeString());
+        // Extracting datetimes and prediction values for stands        
+        const standTimeLabels = standPredictions.map(prediction => 
+            new Date(prediction.datetime).toLocaleString('en-US', {
+                weekday: 'short', 
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            })
+        );
+        
         const standPredictionValues = standPredictions.map(prediction => prediction.predicted_available_stands);
 
         // Create the bikes chart
