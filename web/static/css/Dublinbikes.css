@@ -330,11 +330,21 @@ button:disabled {
 @media (max-width: 800px) {
     .flex-row {
         flex-direction: column; 
+        margin-bottom: 25px;
+        overflow: hidden; /* Adjust or change to 'auto' if content needs to scroll */
+
     }
 
     .flex-item{
         width: 100%;
         padding: 10px;
+        flex: 0 0 100%; /* Forces items to take full width individually and not overlap */
+        flex-grow: 0; /* Prevents flex items from growing */
+        flex-shrink: 0; /* Prevents flex items from shrinking */
+        flex-basis: auto; /* Takes up only as much space as its content */
+    }
+    #top-left, #top-right {
+        min-height: 100px; /* Adjust based on content */
     }
 
     img {
@@ -358,8 +368,14 @@ button:disabled {
     .availability-item img {
         width: 50px; /* Smaller icons for mobile */
     }
+
     .legend, .availability-item span {
         font-size: 12px;
+    }
+
+    #map-container {
+        position: relative; /* Adjust if needed */
+        z-index: 1; /* Higher index, the more on top it will be */
     }
 
     #map-container, #side-info {
