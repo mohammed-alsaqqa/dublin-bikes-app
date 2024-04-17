@@ -328,13 +328,21 @@ button:disabled {
 
 /* For smaller screen sizes */
 @media (max-width: 800px) {
+    .flexb{
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
     .flex-row {
         flex-direction: column;
         margin-bottom: 10px; /* Reduced margin for tighter layout */
     }
 
     .flex-item {
+        flex: 1 1 auto;
         width: 100%; /* Full width for better use of space */
+        box-sizing: border-box;
         padding: 5px; /* Reduced padding */
     }
 
