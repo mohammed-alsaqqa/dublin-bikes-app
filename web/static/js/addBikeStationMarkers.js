@@ -281,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => console.error('Error fetching station data:', error));
             }, 2912);
         };
+        navigator.geolocation.getCurrentPosition
     } else {
         console.log("Geolocation is not supported by this browser.");
     }
