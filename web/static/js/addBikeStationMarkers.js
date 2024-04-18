@@ -251,34 +251,35 @@ function renderChart(labels, bikeAverages) {
 
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
-        console.log("out function");
-        navigator.geolocation.getCurrentPosition = (fn) => {
-            console.log("in function");
-            setTimeout(() => {
-                console.log("in timeout");
-              fn({
-                coords: {
-                  accuracy: 40,
-                  altitude: null,
-                  altitudeAccuracy: null,
-                  heading: null,
-                  latitude: 6.2603,
-                  longitude: 53.3498,
-                  speed: null,
-                },
-                timestamp: Date.now(),
-              })
-            }, 2912)
+        console.log("Geolocation is available. Overriding getCurrentPosition.");
+        const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition;
 
-            fetch('/stations_json_data/')
-                .then(response => response.json())
-                .then(allStations => {
-                    closestStations = getClosestStations(position, allStations);
-                    renderChartForClosestStations(closestStations);
-                })
-                .catch(error => console.error('Error fetching station data:', error));
-        }, function(error) {
-            console.error('Error getting user location:', error);
+        navigator.geolocation.getCurrentPosition = function(successCallback, errorCallback) {
+            console.log("Mock getCurrentPosition called");
+            setTimeout(() => {
+                console.log("Executing mocked position callback");
+                const mockPosition = {
+                    coords: {
+                        accuracy: 40,
+                        altitude: null,
+                        altitudeAccuracy: null,
+                        heading: null,
+                        latitude: 53.3498, // Dublin coordinates
+                        longitude: -6.2603,
+                        speed: null,
+                    },
+                    timestamp: Date.now(),
+                };
+                successCallback(mockPosition);
+
+                fetch('/stations_json_data/')
+                    .then(response => response.json())
+                    .then(allStations => {
+                        const closestStations = getClosestStations(mockPosition, allStations);
+                        renderChartForClosestStations(closestStations);
+                    })
+                    .catch(error => console.error('Error fetching station data:', error));
+            }, 2912);
         };
     } else {
         console.log("Geolocation is not supported by this browser.");
