@@ -276,6 +276,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(allStations => {
                         const closestStations = getClosestStations(mockPosition, allStations);
                         renderChartForClosestStations(closestStations);
+			
+				
+				
+				
+			
                     })
                     .catch(error => console.error('Error fetching station data:', error));
             }, 50);
