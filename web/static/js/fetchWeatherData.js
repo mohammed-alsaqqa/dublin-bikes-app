@@ -5,7 +5,6 @@ function fetchWeatherData() {
         .then(response => response.json())  // Parse the JSON response
         .then(data => {
             // Handle the data returned from the Flask API
-            console.log(data)
             switch (data.Weather){
                 case "Clouds":
                     weatherImage = "https://openweathermap.org/img/wn/04d@2x.png"
@@ -30,9 +29,9 @@ function fetchWeatherData() {
             }
                 
             document.getElementById('weatherImage').src = weatherImage;
-            document.getElementById('weatherInfo').innerHTML = "Temperature: "+ data.temperature;
-            document.getElementById('weatherInfo').innerHTML += "<br>Wind Speed: " + data.wind_speed;
-            document.getElementById('weatherInfo').innerHTML += "<br>Humidity: " +data.Humidity;
+            document.getElementById('weatherInfo').innerHTML = "Temperature: "+ data.temperature+" °C";
+            document.getElementById('weatherInfo').innerHTML += "<br>Wind Speed: " + data.wind_speed+" m/s";
+            document.getElementById('weatherInfo').innerHTML += "<br>Humidity: " +data.Humidity+"%";
             
             
         })
@@ -42,4 +41,3 @@ function fetchWeatherData() {
 fetchWeatherData();
 
 
-//  http://localhost:5000/weather_json_data/

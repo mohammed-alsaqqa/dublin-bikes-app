@@ -6,9 +6,31 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+    background-color: rgba(221, 221, 221, 0.8);
+    
 
 }    
 
+button{
+    border-radius: 25px;
+    background-color: rgba(10, 49, 97, 0.8);
+    color: white;
+    padding: 1%;
+    box-shadow: #000 0px 0px 5px;
+    cursor: pointer;
+}
+
+#planJourneyButton{
+    padding: 5%;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+button:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    
+}
 
 #search {
     position: absolute;
@@ -24,7 +46,7 @@ html, body {
 
 /* For search bar */
 .map-search {
-    position: absolute;
+    /* position: absolute; */
     width: 120px;
     height: 20px;
     font-size: 16px;
@@ -65,7 +87,11 @@ html, body {
     justify-content: center;
     width: 100%;
     flex-direction: row; 
-    background-image: linear-gradient(to left, #008cff, 80%, orange);
+    /* background-image: linear-gradient(to left, #008cff, 80%, orange); */
+    /* background-color: rgb(64, 137, 251); */
+
+    background-color: rgba(10, 49, 97, 0.8);
+
 }
 
 #bottom-right {
@@ -84,9 +110,16 @@ html, body {
 /* This is for the witdh of the top right container */
 #top-right {
     flex: .667; 
-    background-image: linear-gradient(to right, #008cff, orange);
+    /* background-image: linear-gradient(to right, #008cff, orange); */
+    background-color: rgba(10, 49, 97, 0.8);
+
     justify-content: space-between;
+    display: flex;
 }
+
+
+
+
 
 /* This is for the height of the bottom two containers */
 .flex-row:last-child {
@@ -94,7 +127,9 @@ html, body {
 }
 
 #weatherInfo {
+    flex: 2;
     color: white;
+    text-align: center;
 }
 
 .logo-img {
@@ -118,7 +153,10 @@ html, body {
     flex-direction: column; 
     align-items: center;
     width: 100%;
-    background-color: #e8eaed;
+    /* background-color: #e8eaed; */
+    background-color: rgba(221, 221, 221, 0.8);
+    min-width: 25vw;
+
 }
 
 #side-info canvas {
@@ -129,9 +167,18 @@ html, body {
     margin-bottom: 20px;
 }
 
+#chart-caption{
+    font-size: 0.9rem;
+    padding-left: 6%;
+    padding-right: 6%;
+    margin: 0;
+    text-align: center;
+}
+
+
 /* For map container */
 #map-container {
-    flex: 3; /* Increases size, taking more space */
+    flex: 3; 
     position: relative;
 }
 
@@ -144,7 +191,18 @@ html, body {
 #weatherImage {
     width: 60%;
     height: 100%;
+    flex: 1;
 }
+
+#header{
+    height: 15vh;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+}
+
+
+
 
 #journey-planner-button {
     position:absolute;
@@ -158,17 +216,39 @@ html, body {
 } 
 
 #journey-planner-div {
+    height: 100%;
     display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 8px;
-    background-color: #e8eaed;
-    flex-basis: 220px;
+    /* background-color: #e8eaed; */
+    background-color: rgba(221, 221, 221, 0.8);
+    /* flex-basis: 220px;
     flex-grow: 0;
-    flex-shrink: 1;
+    flex-shrink: 1; */
     max-width: 220px;
+
 }
+
+
+#journey-form-div{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    row-gap: 10%;
+    /* background-color: #e8eaed; */
+    background-color: rgba(221, 221, 221, 0.8);
+    /* flex-basis: 20%; */
+    /* flex-grow: 0;
+    flex-shrink: 1; */
+    max-width: 100%;
+    background-color: rgba(221, 221, 221, 0.8);
+
+}
+
 
 .journey-planner-img {
     width: 100%; 
@@ -178,22 +258,72 @@ html, body {
     margin: 10px auto; 
 }
 
+
+.info{
+    font-size: 0.7rem;
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+#prediction-results p{
+    font-size: 0.9rem;
+    padding: 6%;
+    margin: 0;
+    text-align: center;
+
+}
+
+
 .timeSelection {
+    height: 100%;
+    width: 90%;
     top: 10px;
     left: 10px;
     z-index: 5;
     background-color: white;
     padding: 5px;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    row-gap: 0.8vh;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    
 }
 
+.date-time{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 3%;
+    gap: 5%;
+
+}
+
+#map-search-start, #map-search-fin {
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+#checkboxes-start, #checkboxes-fin{
+    padding-left: 5%;
+    padding-right: 5%;
+    margin: 3%;
+    gap: 5%;
+
+}
 
 #Legend {
     display: none;
     position: absolute;
-    top: 20px;
+    top: 50px;
     right: 10px;
-    background-color: rgba(255, 255, 255, 0);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    background-color: rgba(221, 221, 221, 0.8);
     padding: 10px;
     border-radius: 5px;
     z-index: 100;
@@ -232,34 +362,62 @@ html, body {
 
 /* For smaller screen sizes */
 @media (max-width: 800px) {
-    flex-row {
-        flex-direction: column; 
+    #top-left{
+	font-size:20px;
+	padding: 10px; /* Ensures padding doesn't cause overflow */
     }
 
-    #map-container, #side-info {
-        flex: none;
-        height: 300px; 
+    #top-right{
+	display:none;
     }
 
-    .bike-availability-img {
-        width: 20px;
-        height: 25px; 
-    }
-
-    .map-search, #search {
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-        left: 0;
-        right: 0; 
+    img {
+        max-width: 100%;
+        height: auto;
     }
 
     body {
-        font-size: 15px; 
+        font-size: 14px; /* Smaller font size for more space */
     }
 
-    .availability-item, .map-search, #search {
-        min-height: 50px;
-        padding: 10px;
+    h2 {
+        font-size: 18px; /* Smaller heading for less space consumption */
+    }
+
+    input[type="text"], input[type="date"], select {
+        font-size: 16px; /* Larger font size for better readability */
+        padding: 12px; /* Larger padding for easier interaction */
+        width: 100%; /* Full width to utilize space */
+    }
+
+    .availability-item img {
+        width: 40px; /* Adjusted size for better fit */
+    }
+
+    .availability-item span {
+        font-size: 12px; /* Smaller text to fit space */
+    }
+
+    .map-search {
+        width: 100%; /* Full width */
+    }
+
+    #search {
+        width: 100%; /* Full width to avoid overflow */
+        margin-left: 0; /* Center alignment */
+    }
+
+    #side-info {
+        display: none;
+    }
+
+    .bike-availability-img {
+        width: 30px; /* Smaller image for space efficiency */
+        height: 35px;
+    }
+
+    #planJourneyButton {
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 }

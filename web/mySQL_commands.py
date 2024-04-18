@@ -5,9 +5,12 @@ from datetime import datetime, timedelta
 from flask import g
 import requests
 import json
-load_dotenv(".env")
+load_dotenv("/home/ubuntu/project/.env")
 PASSWORD = getenv("PASSWORD")
 WEATHER_API_KEY = getenv("OPEN_WEATHER_API")
+
+print(PASSWORD)
+
 def createConnection():
     """
     This function creates a connection to the database

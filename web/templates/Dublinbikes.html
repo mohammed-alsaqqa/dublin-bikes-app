@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     
     <title>Dublin Bikes</title>
@@ -7,20 +7,20 @@
     <link rel="stylesheet" type="text/css" href="/static/css/Dublinbikes.css">
 
     <!--Google Maps API + places library important, for searchbar-->
-    <script async src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ GMAP_API_KEY }}&libraries=places,geometry&callback=initMap"></script>
 
 </head>
 <body>
 
     <!--Flex box setup-->
     <div class="flexb">
-        <div class="flex-row">
+        <div id="header" class="flex-row">
             <div class="flex-item logo-and-text" id="top-left">
                 <span class="logo-text">Dublin Bikes</span>
                 <img src="/static/img/titleImages/HIH.png" alt="Dublin Bikes" class="logo-img">
-                </div>
+            </div>
             <div class="flex-item" id="top-right">
-                <img id="weatherImage"></img>
+                <img src="" alt="Weather Logo" id="weatherImage"></img>
                 <p id="weatherInfo"></p>
             </div>
         </div>
@@ -31,36 +31,57 @@
                     <img src="/static/img/titleImages/JourneyPlanner.png" alt="Journey Planner" class="journey-planner-img">
                     <!-- Start Time Selection -->
                     <div class="timeSelection">
-                        <label for="dateStart">Start Date:</label>
-                        <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+                        <label for="dateStart">Select Journey Start Time</label>
+                        <div class="date-time">
+                            <input type="date" id="dateStart" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
 
-                        <select id="timeDropdownStart">
-                            <script src="/static/js/timeOptions.js"></script>
-                        </select>
+                            <select id="timeDropdownStart">
+                                <script src="/static/js/timeOptions.js"></script>
+                            </select>
+                        </div>
+                        <div class="info">Input a Location to Display The Closest 3 Stations:</div>
+                        <input id="map-search-start" class="map-search" type="text" placeholder="Search Start Location">
+                        
+                        <div id="checkboxes-start">
+                            
+                            <!-- Dynamically generated checkboxes for start station -->
+                        </div>
+
                     </div>
-                
+                    
+
+
+                    <div class="timeSelection">
+                        <label for="dateFin">Select Journey End Time</label>
+                        <div class="date-time">
+                            <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
+
+                            <select id="timeDropdownFin"></select>
+                        </div>
+                        <!-- <div class="info">Input a Location to Display The Closest Three Stations:</div> -->
+                        <div class="info">Input a Location to Display The Closest 3 Stations:</div>
+
+                        <input id="map-search-fin" class="map-search" type="text" placeholder="Search End Location">
+                        
+                        <div id="checkboxes-fin">
+                            
+                            <!-- Dynamically generated checkboxes for start station -->
+                        </div>
+
+                    </div>    
+
+
+
+
                     <!-- Start Date Selection -->
                 
-                    <input id="map-search-start" class="map-search" type="text" placeholder="Search Start location">
-                    <br><br>
-                    <div id="checkboxes-start">
+                    <!-- <input id="map-search-start" class="map-search" type="text" placeholder="Search Start location"> -->
+                    <!-- <br><br> -->
+                    <!-- <div id="checkboxes-start"> -->
                         <!-- Dynamically generated checkboxes for start station -->
-                    </div>
+                    <!-- </div> -->
                 
-                    <!-- Destination Time Selection -->
-                    <div class="timeSelection">
-                        <input type="date" id="dateFin" min="2023-01-01" max="2023-01-05"> <!-- Update min and max with JS -->
 
-                        <select id="timeDropdownFin">
-                            <!-- Time options will be filled by timeOptions.js -->
-                        </select>
-                    </div>
-                                
-                    <input id="map-search-fin" class="map-search" type="text" placeholder="Search Destination location">
-                    <br><br>
-                    <div id="checkboxes-fin">
-                        <!-- Dynamically generated checkboxes for destination station -->
-                    </div>
                 
                     <!-- Plan Button -->
                     <button id="planJourneyButton" type="button" disabled>Plan Journey</button>
@@ -87,7 +108,8 @@
                     </div>
                 </div>
             </div>
-            <div id="side-info" class="flex-item" id="bottom-right"><div id="loading-message">Getting the closest stations to your current location...</div>
+            <div id="side-info" class="flex-item" id="bottom-right">
+                <div id="loading-message">Getting the closest stations to your current location...</div>
         </div>
         </div>
     </div>
@@ -99,7 +121,6 @@
     <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
-    <script src="/static/js/fetchWeatherData.js"></script>
 
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -108,7 +129,7 @@
 <!-- Include Chart.js adapter for Moment.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0/dist/chartjs-adapter-moment.min.js"></script>
 <!-- Include the weather data -->
-    <script type = "text/javascript" src="/static/js/journey-planner.js"></script>
+    <script src="/static/js/journey-planner.js"></script>
     <script src="/static/js/planner-form.js"></script>
     <script src="/static/js/legendToggle.js"></script>
 

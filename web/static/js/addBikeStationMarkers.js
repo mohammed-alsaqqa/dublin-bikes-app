@@ -156,7 +156,8 @@ function createChart(canvasId, chartLabel, labels, data, xAxisLabel) {
             datasets: [{
                 label: chartLabel,
                 data: data,
-                borderColor: 'rgb(75, 192, 192)',
+                // borderColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgba(10, 49, 97, 0.8)',
                 tension: 0.1
             }]
         },
@@ -173,13 +174,15 @@ function createChart(canvasId, chartLabel, labels, data, xAxisLabel) {
                     title: {
                         display: true,
                         text: 'Average Bikes Available'
-                    }
+                    },
+                    min: 0,
+                    max: 40,
                 }
             },
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top',
+                    position: 'bottom',
                 }
             }
         }
@@ -232,6 +235,7 @@ function renderChart(labels, bikeAverages) {
                 },
                 y: {
                     beginAtZero: true,
+                    
                     title: {
                         display: true,
                         text: 'Average Available Bikes'
@@ -250,17 +254,41 @@ function renderChart(labels, bikeAverages) {
 
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            fetch('/stations_json_data/')
-                .then(response => response.json())
-                .then(allStations => {
-                    closestStations = getClosestStations(position, allStations);
-                    renderChartForClosestStations(closestStations);
-                })
-                .catch(error => console.error('Error fetching station data:', error));
-        }, function(error) {
-            console.error('Error getting user location:', error);
-        });
+        console.log("Geolocation is available. Overriding getCurrentPosition.");
+        const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition;
+
+        navigator.geolocation.getCurrentPosition = function() {
+            console.log("Mock getCurrentPosition called");
+            setTimeout(() => {
+                console.log("Executing mocked position callback");
+                const mockPosition = {
+                    coords: {
+                        accuracy: 40,
+                        altitude: null,
+                        altitudeAccuracy: null,
+                        heading: null,
+                        latitude: 53.3498, // Dublin coordinates
+                        longitude: -6.2603,
+                        speed: null,
+                    },
+                    timestamp: Date.now(),
+                };
+
+                fetch('/stations_json_data/')
+                    .then(response => response.json())
+                    .then(allStations => {
+                        const closestStations = getClosestStations(mockPosition, allStations);
+                        renderChartForClosestStations(closestStations);
+			
+				
+				
+				
+			
+                    })
+                    .catch(error => console.error('Error fetching station data:', error));
+            }, 50);
+        };
+        navigator.geolocation.getCurrentPosition()
     } else {
         console.log("Geolocation is not supported by this browser.");
     }
@@ -287,6 +315,10 @@ function renderChartForClosestStations(closestStations) {
     let canvas = document.getElementById('station-chart');
     if (!canvas) {
         document.getElementById('side-info').innerHTML = '<canvas id="station-chart"></canvas>';
+        let caption = document.createElement('p');
+        caption.textContent = 'Bike and stand availability for the 5 closest stations';
+        caption.id = 'chart-caption';
+        document.getElementById('side-info').appendChild(caption);
         canvas = document.getElementById('station-chart');
     }
     const ctx = document.getElementById('station-chart').getContext('2d');
@@ -302,14 +334,17 @@ function renderChartForClosestStations(closestStations) {
                 label: 'Available Bikes',
                 data: bikesData,
 
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                borderColor: 'rgba(255, 99, 132, 1)',
+                // backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                backgroundColor: 'rgba(10, 49, 97, 0.8)',
+                // borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }, {
                 label: 'Available Stands',
                 data: standsData,
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
+                // backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                // backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                backgroundColor: 'rgb(236, 111, 76)',
+                // borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1
             }]
         },
@@ -321,7 +356,8 @@ function renderChartForClosestStations(closestStations) {
                     beginAtZero: true
                 },
                 y: {
-                    stacked: true // Stack the bars
+                    stacked: true, // Stack the bars,
+
                 }
             },
             plugins: {
