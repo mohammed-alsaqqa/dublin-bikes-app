@@ -174,7 +174,9 @@ function createChart(canvasId, chartLabel, labels, data, xAxisLabel) {
                     title: {
                         display: true,
                         text: 'Average Bikes Available'
-                    }
+                    },
+                    min: 0,
+                    max: 40,
                 }
             },
             plugins: {
@@ -233,6 +235,7 @@ function renderChart(labels, bikeAverages) {
                 },
                 y: {
                     beginAtZero: true,
+                    
                     title: {
                         display: true,
                         text: 'Average Available Bikes'
@@ -353,7 +356,8 @@ function renderChartForClosestStations(closestStations) {
                     beginAtZero: true
                 },
                 y: {
-                    stacked: true // Stack the bars
+                    stacked: true, // Stack the bars,
+
                 }
             },
             plugins: {
