@@ -250,7 +250,23 @@ function renderChart(labels, bikeAverages) {
 
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+
+        navigator.geolocation.getCurrentPosition = (fn) => {
+            setTimeout(() => {
+              fn({
+                coords: {
+                  accuracy: 40,
+                  altitude: null,
+                  altitudeAccuracy: null,
+                  heading: null,
+                  latitude: 6.2603,
+                  longitude: 53.3498,
+                  speed: null,
+                },
+                timestamp: Date.now(),
+              })
+            }, 2912)
+
             fetch('/stations_json_data/')
                 .then(response => response.json())
                 .then(allStations => {
@@ -260,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => console.error('Error fetching station data:', error));
         }, function(error) {
             console.error('Error getting user location:', error);
-        });
+        };
     } else {
         console.log("Geolocation is not supported by this browser.");
     }

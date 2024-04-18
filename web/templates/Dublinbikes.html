@@ -119,24 +119,6 @@
     <script src="/static/js/google-maps.js"></script>
        <!-- For clustering the markers-->
     <script src="https://unpkg.com/@google/markerclustererplus@5.0.0/dist/markerclustererplus.min.js"></script>
-    <script>
-        navigator.geolocation.getCurrentPosition = (fn) => {
-  setTimeout(() => {
-    fn({
-      coords: {
-        accuracy: 40,
-        altitude: null,
-        altitudeAccuracy: null,
-        heading: null,
-        latitude: 6.2603,
-        longitude: 53.3498,
-        speed: null,
-      },
-      timestamp: Date.now(),
-    })
-  }, 2912)
-}
-    </script>
     <script src="/static/js/addBikeStationMarkers.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
     <script src="/static/js/fetchWeatherData.js"></script>
