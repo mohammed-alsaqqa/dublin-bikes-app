@@ -114,6 +114,7 @@ button:disabled {
     background-color: rgba(10, 49, 97, 0.8);
 
     justify-content: space-between;
+    display: flex;
 }
 
 
@@ -126,7 +127,9 @@ button:disabled {
 }
 
 #weatherInfo {
+    flex: 2;
     color: white;
+    text-align: center;
 }
 
 .logo-img {
@@ -152,6 +155,7 @@ button:disabled {
     width: 100%;
     /* background-color: #e8eaed; */
     background-color: rgba(221, 221, 221, 0.8);
+    min-width: 25vw;
 
 }
 
@@ -162,6 +166,15 @@ button:disabled {
     /* height: 100%; */
     margin-bottom: 20px;
 }
+
+#chart-caption{
+    font-size: 0.9rem;
+    padding-left: 6%;
+    padding-right: 6%;
+    margin: 0;
+    text-align: center;
+}
+
 
 /* For map container */
 #map-container {
@@ -178,6 +191,7 @@ button:disabled {
 #weatherImage {
     width: 60%;
     height: 100%;
+    flex: 1;
 }
 
 #header{
@@ -188,22 +202,7 @@ button:disabled {
 }
 
 
-#journey-form-div{
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    row-gap: 10%;
-    /* background-color: #e8eaed; */
-    background-color: rgba(221, 221, 221, 0.8);
-    /* flex-basis: 20%; */
-    /* flex-grow: 0;
-    flex-shrink: 1; */
-    max-width: 100%;
-    background-color: rgba(221, 221, 221, 0.8);
 
-}
 
 #journey-planner-button {
     position:absolute;
@@ -225,12 +224,31 @@ button:disabled {
     padding: 8px;
     /* background-color: #e8eaed; */
     background-color: rgba(221, 221, 221, 0.8);
-    flex-basis: 220px;
+    /* flex-basis: 220px;
     flex-grow: 0;
-    flex-shrink: 1;
+    flex-shrink: 1; */
     max-width: 220px;
 
 }
+
+
+#journey-form-div{
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    row-gap: 10%;
+    /* background-color: #e8eaed; */
+    background-color: rgba(221, 221, 221, 0.8);
+    /* flex-basis: 20%; */
+    /* flex-grow: 0;
+    flex-shrink: 1; */
+    max-width: 100%;
+    background-color: rgba(221, 221, 221, 0.8);
+
+}
+
 
 .journey-planner-img {
     width: 100%; 
@@ -246,6 +264,15 @@ button:disabled {
     padding-left: 6%;
     padding-right: 6%;
 }
+
+#prediction-results p{
+    font-size: 0.9rem;
+    padding: 6%;
+    margin: 0;
+    text-align: center;
+
+}
+
 
 .timeSelection {
     height: 100%;
@@ -293,7 +320,7 @@ button:disabled {
 #Legend {
     display: none;
     position: absolute;
-    top: 20px;
+    top: 50px;
     right: 10px;
     /* background-color: rgba(255, 255, 255, 0.8); */
     background-color: rgba(221, 221, 221, 0.8);
