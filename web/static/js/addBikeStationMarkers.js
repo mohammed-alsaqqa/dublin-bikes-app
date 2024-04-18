@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Geolocation is available. Overriding getCurrentPosition.");
         const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition;
 
-        navigator.geolocation.getCurrentPosition = function(successCallback, errorCallback) {
+        navigator.geolocation.getCurrentPosition = function() {
             console.log("Mock getCurrentPosition called");
             setTimeout(() => {
                 console.log("Executing mocked position callback");
@@ -270,7 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     timestamp: Date.now(),
                 };
-                successCallback(mockPosition);
 
                 fetch('/stations_json_data/')
                     .then(response => response.json())
@@ -279,9 +278,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         renderChartForClosestStations(closestStations);
                     })
                     .catch(error => console.error('Error fetching station data:', error));
-            }, 2912);
+            }, 50);
         };
-        navigator.geolocation.getCurrentPosition
+        navigator.geolocation.getCurrentPosition()
     } else {
         console.log("Geolocation is not supported by this browser.");
     }
