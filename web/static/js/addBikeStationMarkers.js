@@ -251,9 +251,11 @@ function renderChart(labels, bikeAverages) {
 
 document.addEventListener('DOMContentLoaded', function() {
     if ("geolocation" in navigator) {
-
+        console.log("out function");
         navigator.geolocation.getCurrentPosition = (fn) => {
+            console.log("in function");
             setTimeout(() => {
+                console.log("in timeout");
               fn({
                 coords: {
                   accuracy: 40,
